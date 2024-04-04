@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "PlayerCharacterCameraShaker.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -53,13 +54,30 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
 	FString Jumping = "Jump";
 	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
-	FString Click = "Click";
+	FString Click = "Interact";
+	// UPROPERTY(EditDefaultsOnly, Category = "Control Action")
+	// FString RightClick = "RightClick";
+	// UPROPERTY(EditDefaultsOnly, Category = "Control Action")
+	// FString Scroll = "Scroll";
+	// UPROPERTY(EditDefaultsOnly, Category = "Control Action")
+	// FString Collect = "Collect";
+
+	//Camera Shake
+	UPlayerCharacterCameraShaker* CamShake;
+
+	//Set up movement rate
+	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
+	float RunningSpeed = 500;
+	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
+	float WalkingSpeed = 200;
+	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
+	float MoveSpeed = 100;
+
+	//Set up jump speed
 	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
-	FString RightClick = "RightClick";
+	float WalkingJumpSpeed = 800;
 	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
-	FString Scroll = "Scroll";
-	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
-	FString Collect = "Collect";
+	float RunningJumpSpeed = 1500;
 	
 private:
 	//Set up movement
@@ -71,13 +89,15 @@ private:
 	void LookUpCtrl (float AxisValue);
 	void TurnRightCtrl (float AxisValue);
 
-	//Set up movement rate
-	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
-	float RunningSpeed = 500;
-	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
-	float WalkingSpeed = 200;
-	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
-	float MoveSpeed = 100;
+	//Set up crouch
+	void CrouchCtrl();
+	bool bIsCrouching = false;
+	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
+	float CrouchSpeed = 100;
+
+	void HoldThings(float AxisValue);
+	
+	
 	
 	//Set up camera rate
 	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
