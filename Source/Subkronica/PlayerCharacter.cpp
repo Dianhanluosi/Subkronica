@@ -5,6 +5,11 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Interfaces/ITargetDevice.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "InteractableMother.h"
+#include "Grabber.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -15,10 +20,18 @@ APlayerCharacter::APlayerCharacter()
 	// Initialize Follow Camera
 	Cam = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	Cam->SetupAttachment(RootComponent); // Attach the camera to the end of the swing arm
-
+	
+	//initialize camera shaker as null pointer
 	CamShake = nullptr;
+
+	// Initialize Physics Handle
+	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
 	
 	//GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+
+	//set up crouching stuff
+	CrouchEyeOffSet = FVector(0.f);
+	CrouchSpeed = 12.f;
 
 }
 
@@ -30,6 +43,11 @@ void APlayerCharacter::BeginPlay()
 	MoveSpeed = WalkingSpeed;
 
 	GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
+
+	float OriginalHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+	CrouchHeight = -(OriginalHeight * CrouchRatio);
+
+	Grabber = FindComponentByClass<UGrabber>();
 	
 }
 
@@ -45,7 +63,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	float Speed = Velocity.Size();
 
 	// Log the speed to the output log
-	UE_LOG(LogTemp, Warning, TEXT("Current Speed: %f units/s"), Speed);
+	//UE_LOG(LogTemp, Warning, TEXT("Current Speed: %f units/s"), Speed);
 
 	if (GetVelocity().Size() > 0)
 	{
@@ -63,6 +81,10 @@ void APlayerCharacter::Tick(float DeltaTime)
 		}
 	}
 
+	//crouch transition setup
+	float CroucHInterpTime = FMath::Min(1.f, CrouchSpeed * DeltaTime);
+	CrouchEyeOffSet = (1.f - CroucHInterpTime) * CrouchEyeOffSet;
+
 }
 
 // Called to bind functionality to input
@@ -77,11 +99,11 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis(*LookUp, this, &APlayerCharacter::LookUpCtrl);
 	PlayerInputComponent->BindAxis(*TurnRight, this, &APlayerCharacter::TurnRightCtrl);
 
+	PlayerInputComponent->BindAxis(*Crouching, this, &APlayerCharacter::CrouchCtrl);
+
 	PlayerInputComponent->BindAxis(*Hold, this, &APlayerCharacter::HoldThings);
 
 	PlayerInputComponent->BindAction(*Jumping, EInputEvent::IE_Pressed, this, &ACharacter::Jump);
-
-	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &APlayerCharacter::CrouchCtrl);
 	
 
 }
@@ -106,18 +128,20 @@ void APlayerCharacter::MoveRightCtrl(float AxisValue)
 
 void APlayerCharacter::SprintCtrl(float AxisValue)
 {
-	if (AxisValue == 1 && !bIsCrouching)
+	if (AxisValue == 1)
 	{
-		MoveSpeed = RunningSpeed;
-		GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
-		GetCharacterMovement()->JumpZVelocity = RunningJumpSpeed;
+		IsRunning = true;
+		// MoveSpeed = RunningSpeed;
+		// GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
+		// GetCharacterMovement()->JumpZVelocity = RunningJumpSpeed;
 
 	}
-	else if (!bIsCrouching)
+	else
 	{
-		MoveSpeed = WalkingSpeed;
-		GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
-		GetCharacterMovement()->JumpZVelocity = WalkingJumpSpeed;
+		IsRunning = false;
+		// MoveSpeed = WalkingSpeed;
+		// GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
+		// GetCharacterMovement()->JumpZVelocity = WalkingJumpSpeed;
 
 	}
 }
@@ -140,26 +164,97 @@ void APlayerCharacter::TurnRightCtrl(float AxisValue)
 	AddControllerYawInput(AxisValue * RotationRateRight * GetWorld()->GetDeltaSeconds());
 }
 
-void APlayerCharacter::CrouchCtrl()
+void APlayerCharacter::CrouchCtrl(float AxisValue)
 {
-	if(!bIsCrouching)
+	if (AxisValue == 1)
 	{
-		Crouch();
+		//Crouch();
+		OnStartCrouch(CrouchHeight, CrouchHeight);
 		bIsCrouching = true;
-		GetCharacterMovement()->MaxWalkSpeed = CrouchSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = CrouchWalkingSpeed;
 		GetCharacterMovement()->JumpZVelocity = 0;
 	}
 	else
 	{
-		UnCrouch();
-		bIsCrouching = false;
-		GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
-		GetCharacterMovement()->JumpZVelocity = WalkingJumpSpeed;
+		//UnCrouch();
+		if (bIsCrouching)
+		{
+			OnEndCrouch(-CrouchHeight, -CrouchHeight);
+			bIsCrouching = false;
+			
+		}
+		if (!IsRunning)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
+			GetCharacterMovement()->JumpZVelocity = WalkingJumpSpeed;
+		}
+		else
+		{
+			GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
+			GetCharacterMovement()->JumpZVelocity = RunningJumpSpeed;
+		}
+		
 	}
+	
+}
+
+//crouching stuff
+void APlayerCharacter::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
+{
+	if (HalfHeightAdjust == 0)
+	{
+		return;
+	}
+
+	float StartBaseEyeHeight = BaseEyeHeight;
+	Super::OnStartCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
+	CrouchEyeOffSet.Z += StartBaseEyeHeight - BaseEyeHeight + HalfHeightAdjust;
+	Cam->SetRelativeLocation(FVector(0,0,BaseEyeHeight), false);
+	//CrouchHeight = -CrouchHeight;
+}
+
+void APlayerCharacter::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
+{
+	if (HalfHeightAdjust == 0)
+	{
+		return;
+	}
+
+	float StartBaseEyeHeight = BaseEyeHeight;
+	Super::OnEndCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
+	CrouchEyeOffSet.Z += StartBaseEyeHeight - BaseEyeHeight - HalfHeightAdjust;
+	Cam->SetRelativeLocation(FVector(0,0,BaseEyeHeight), false);
+	//CrouchHeight = -CrouchHeight;
+
+}
+
+void APlayerCharacter::CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult)
+{
+	if (Cam)
+	{
+		Cam->GetCameraView(DeltaTime, OutResult);
+		OutResult.Location += CrouchEyeOffSet;
+	}
+	
+	//Super::CalcCamera(DeltaTime, OutResult);
 }
 
 void APlayerCharacter::HoldThings(float AxisValue)
 {
+	if (Grabber != nullptr)
+	{
+		if (AxisValue == 1)
+		{
+
+			Grabber->Grab();
+		}
+		else
+		{
+			Grabber->Release();
+		}
+	}
+	
+	
 }
 
 

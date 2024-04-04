@@ -31,6 +31,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	class UCameraComponent* Cam;
 
+	//Set up physics handle
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Physics Handle")
+	class UPhysicsHandleComponent* PhysicsHandle;
+
 	//Set up control keywords
 	//Axis
 	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
@@ -44,13 +48,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
 	FString Sprint = "Sprint";
 	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
+	FString Crouching = "Crouch";
+	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
 	FString Hold = "Hold";
 	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
 	FString Pee = "Pee";
 	
-	//Actions
-	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
-	FString Crouching = "Crouch";
+	//Action
 	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
 	FString Jumping = "Jump";
 	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
@@ -78,6 +82,30 @@ public:
 	float WalkingJumpSpeed = 800;
 	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
 	float RunningJumpSpeed = 1500;
+
+	//Crouch stuff
+	//Set up crouch
+	void CrouchCtrl(float AxisValue);
+
+	void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
+
+	void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
+
+	void CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult) override;
+	
+	bool bIsCrouching = false;
+	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
+	float CrouchWalkingSpeed = 100;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Control Action")
+	FVector CrouchEyeOffSet;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Control Action")
+	float CrouchSpeed;
+
+	UPROPERTY(EditDefaultsOnly)
+	float CrouchRatio = 0.4f;
+	UPROPERTY(EditDefaultsOnly)
+	float CrouchHeight;
 	
 private:
 	//Set up movement
@@ -85,17 +113,19 @@ private:
 	void MoveRightCtrl (float AxisValue);
 	void SprintCtrl (float AxisValue);
 
+	bool IsRunning = false;
+
 	//Set up camera movement
 	void LookUpCtrl (float AxisValue);
 	void TurnRightCtrl (float AxisValue);
 
-	//Set up crouch
-	void CrouchCtrl();
-	bool bIsCrouching = false;
-	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
-	float CrouchSpeed = 100;
-
+	//Hold things
+	UPROPERTY()
+	class UGrabber *Grabber;
+	
 	void HoldThings(float AxisValue);
+
+	
 	
 	
 	
