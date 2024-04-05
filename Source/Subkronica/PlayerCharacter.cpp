@@ -47,7 +47,7 @@ void APlayerCharacter::BeginPlay()
 	float OriginalHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 	CrouchHeight = -(OriginalHeight * CrouchRatio);
 
-	Grabber = FindComponentByClass<UGrabber>();
+	//Grabber = FindComponentByClass<UGrabber>();
 	
 }
 
@@ -241,16 +241,20 @@ void APlayerCharacter::CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult)
 
 void APlayerCharacter::HoldThings(float AxisValue)
 {
-	if (Grabber != nullptr)
+	if (FindComponentByClass<UGrabber>())
 	{
 		if (AxisValue == 1)
 		{
-
-			Grabber->Grab();
+			if (!IsHolding)
+			{
+				FindComponentByClass<UGrabber>()->Grab();
+				IsHolding = true;
+			}
 		}
-		else
+		else if (IsHolding)
 		{
-			Grabber->Release();
+			FindComponentByClass<UGrabber>()->Release();
+			IsHolding = false;
 		}
 	}
 	

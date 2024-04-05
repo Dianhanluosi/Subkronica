@@ -5,6 +5,8 @@
 #include "Engine/World.h" 
 #include "InteractableMother.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerController.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
 // Sets default values for this component's properties
@@ -33,18 +35,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	UPhysicsHandleComponent* PhysicsHandle =  GetPhysicsHandle();
-
-	
-
-	if (PhysicsHandle && PhysicsHandle-> GetGrabbedComponent())
-	{
-		FVector TargetLocation = GetComponentLocation() + GetForwardVector() * HoldDistance;
-		PhysicsHandle->SetTargetLocationAndRotation(TargetLocation, GetComponentRotation());
-	}
-	
+	//UE_LOG(LogTemp, Warning, TEXT("Interactable Pointer: %p"), Interactable)
 
 	LoseGrabbedItem();
 }
@@ -64,32 +55,21 @@ void UGrabber::Grab()
 	if (HasHit)
 	{
 		UPrimitiveComponent* Hitcomponent = HitResult.GetComponent();
-		Hitcomponent->SetSimulatePhysics(true);
-		Hitcomponent-> WakeAllRigidBodies();
-		AActor* HitActor = HitResult.GetActor();
-		HitActor-> Tags.Add("Grabbed");
-		HitActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		//HitResult.GetActor()->Tags.Add("Grabbed");
-		PhysicsHandle->GrabComponentAtLocationWithRotation(
-			Hitcomponent,
-			NAME_None,
-			HitResult.ImpactPoint,
-			GetComponentRotation()
-		);
-
-
 		
-		//DrawDebugSphere(GetWorld(), HitResult.Location, 10, 10, FColor::Blue, false, 5);
-		//DrawDebugSphere(GetWorld(),HitResult.ImpactPoint, 10, 10, FColor::Red, false, 5);
-		//AActor* HitActor = HitResult.GetActor();
-		//HitResult.
-		//UE_LOG(LogTemp, Display, TEXT("%s"), *HitResult.GetActor()->GetActorNameOrLabel());
+		AActor* HitActor = HitResult.GetActor();
+		if (!HitActor) return;
+
+		if (!Interactable)
+		{
+			Interactable = Cast<AInteractableMother>(HitActor);
+		}
+		if (Interactable)
+		{
+			Interactable->Grabbed = true;
+		}
 
 	}
-	else
-	{
-		//UE_LOG(LogTemp, Display, TEXT("No Hit"));
-	}
+	
 
 	
 	
@@ -98,36 +78,30 @@ void UGrabber::Grab()
 
 void UGrabber::Release()
 {
-	//UE_LOG(LogTemp, Display, TEXT("Release"));
 	UPhysicsHandleComponent* PhysicsHandle =  GetPhysicsHandle();
 	
-	//if(PhysicsHandle == nullptr)
-	//{
-	//	return;
-	//}
+	
 
-	if(PhysicsHandle && PhysicsHandle->GetGrabbedComponent())
+	if (Interactable)
 	{
-		AActor* GrabbedActor = PhysicsHandle->GetGrabbedComponent()->GetOwner();
-		GrabbedActor-> Tags.Remove("Grabbed");
-		PhysicsHandle->ReleaseComponent();
+		Interactable->Grabbed = false;
+		Interactable = nullptr;
 	}
+	
+	
 }
 
 void UGrabber::LoseGrabbedItem()
 {
 	UPhysicsHandleComponent* PhysicsHandle =  GetPhysicsHandle();
-	/*if(PhysicsHandle == nullptr || PhysicsHandle->GrabbedComponent == nullptr)
-	{
-		return;
-	}*/
 	
 	
-	if(PhysicsHandle && PhysicsHandle->GrabbedComponent && FVector::Dist(PhysicsHandle->GrabbedComponent->GetComponentLocation(), GetComponentLocation()) >= (MaxGrabDistance + LoseDistance))
+	
+	if(Interactable && FVector::Dist(Interactable->GetActorLocation(), GetComponentLocation()) >= (MaxGrabDistance + LoseDistance) || Interactable && !IsItemInView())
 	{
-		AActor* GrabbedActor = PhysicsHandle->GetGrabbedComponent()->GetOwner();
-		GrabbedActor-> Tags.Remove("Grabbed");
-		PhysicsHandle->ReleaseComponent();
+		Interactable->Grabbed = false;
+		Interactable = nullptr;
+		
 	}
 }
 
@@ -147,15 +121,41 @@ bool UGrabber::GetGrabbableInReach(FHitResult& OutHitResult) const
 	FVector Start = GetComponentLocation();
 	FVector End = Start + GetForwardVector() * MaxGrabDistance;
 
-	//DrawDebugLine(GetWorld(), Start, End, FColor::Red);
-	//DrawDebugSphere(GetWorld(), End, 10, 10, FColor::Blue, false, 5);
-
 	FCollisionShape Sphere = FCollisionShape::MakeSphere(GrabRadius);
 	return GetWorld()->SweepSingleByChannel(
 		OutHitResult, Start, End, FQuat::Identity, ECC_GameTraceChannel1,Sphere);
 
 	
 
+}
+
+bool UGrabber::IsItemInView() const
+{
+	if (!Interactable) return false;
+
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (!PlayerController) return false;
+
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	PlayerController->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
+
+	FVector ToItem = Interactable->GetActorLocation() - PlayerViewPointLocation;
+	ToItem.Normalize();
+
+	FVector PlayerViewPointDirection = PlayerViewPointRotation.Vector();
+
+	float DotProduct = FVector::DotProduct(PlayerViewPointDirection, ToItem);
+
+	DotProduct = FMath::Clamp(DotProduct, -1.0f, 1.0f);
+	float AngleRadians = FMath::Acos(DotProduct);
+	float AngleDegrees = FMath::RadiansToDegrees(AngleRadians);
+
+
+	const float PlayerFOV =	PlayerController->PlayerCameraManager->GetFOVAngle();
+
+	return AngleDegrees <= PlayerFOV / 2;
+	
 }
 
 

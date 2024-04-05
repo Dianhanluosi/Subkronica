@@ -120,10 +120,12 @@ private:
 	void TurnRightCtrl (float AxisValue);
 
 	//Hold things
-	UPROPERTY()
-	class UGrabber *Grabber;
+	//UPROPERTY()
+	//class UGrabber *Grabber;
 	
 	void HoldThings(float AxisValue);
+
+	bool IsHolding = false;
 
 	
 	

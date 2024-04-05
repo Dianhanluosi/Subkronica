@@ -33,7 +33,7 @@ void Grab();
 	UFUNCTION(BlueprintCallable)
 	void LoseGrabbedItem();
 
-	
+	AInteractableMother* Interactable = nullptr;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -43,13 +43,13 @@ private:
 	float GrabRadius = 100;
 
 	UPROPERTY(EditAnywhere)
-	float HoldDistance = 200;
-
-	UPROPERTY(EditAnywhere)
 	float LoseDistance = 100;
+
 
 	class UPhysicsHandleComponent* GetPhysicsHandle() const;
 
 	bool GetGrabbableInReach(FHitResult& OutHitResult) const;
+
+	bool IsItemInView() const;
 		
 };
