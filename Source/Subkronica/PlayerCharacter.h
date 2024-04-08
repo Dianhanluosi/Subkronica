@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacterCameraShaker.h"
+#include "Components/SceneComponent.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -34,6 +35,12 @@ public:
 	//Set up physics handle
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Physics Handle")
 	class UPhysicsHandleComponent* PhysicsHandle;
+
+	//Set up pee socket
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pee")
+	class USceneComponent* PeeEmitter;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pee")
+	class UNiagaraComponent* PeeParticle;
 
 	//Set up control keywords
 	//Axis
@@ -135,6 +142,9 @@ private:
 
 	void Interact();
 	void Shoot();
+
+	void PeeCtrl(float AxisValue);
+	bool IsPeeing = false;
 	
 	
 	

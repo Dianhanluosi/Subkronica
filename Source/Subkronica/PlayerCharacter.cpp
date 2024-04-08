@@ -11,6 +11,8 @@
 #include "InteractableMother.h"
 #include "ClickableMother.h"
 #include "Grabber.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -27,6 +29,12 @@ APlayerCharacter::APlayerCharacter()
 
 	// Initialize Physics Handle
 	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
+
+	PeeEmitter = CreateDefaultSubobject<USceneComponent>(TEXT("PeeEmitter"));
+	PeeEmitter->SetupAttachment(RootComponent);
+
+	PeeParticle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("PeeParticle"));
+	PeeParticle->SetupAttachment(PeeEmitter);
 	
 	//GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 
@@ -49,6 +57,8 @@ void APlayerCharacter::BeginPlay()
 	CrouchHeight = -(OriginalHeight * CrouchRatio);
 
 	Grabber = FindComponentByClass<UGrabber>();
+
+	
 	
 }
 
@@ -101,6 +111,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis(*TurnRight, this, &APlayerCharacter::TurnRightCtrl);
 
 	PlayerInputComponent->BindAxis(*Crouching, this, &APlayerCharacter::CrouchCtrl);
+
+	PlayerInputComponent->BindAxis(*Pee, this, &APlayerCharacter::PeeCtrl);
 
 	PlayerInputComponent->BindAction(*Hold, EInputEvent::IE_Pressed, this, &APlayerCharacter::HoldThings);
 	PlayerInputComponent->BindAction(*Hold, EInputEvent::IE_Released, this, &APlayerCharacter::LetGoOfThings);
@@ -293,5 +305,47 @@ void APlayerCharacter::Shoot()
 		Grabber->Release();
 	}
 }
+
+void APlayerCharacter::PeeCtrl(float AxisValue)
+{
+	if (AxisValue == 1)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Peeing!"));
+		if (!bIsCrouching)
+		{
+			if (!IsPeeing)
+			{
+				IsPeeing = true;
+			}
+			if (PeeParticle)
+			{
+				if (!PeeParticle->IsActive())
+				{
+					PeeParticle->Activate();
+				}
+			}
+		}
+		else
+		{
+			IsPeeing = false;
+			if (PeeParticle)
+			{
+				PeeParticle->Deactivate();
+			
+			}
+		}
+	}
+	else
+	{
+		IsPeeing = false;
+		if (PeeParticle)
+		{
+				PeeParticle->Deactivate();
+			
+		}
+		UE_LOG(LogTemp, Warning, TEXT("Not Peeing!"));
+	}
+}
+
 
 
