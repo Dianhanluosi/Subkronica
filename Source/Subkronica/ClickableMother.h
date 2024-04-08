@@ -4,19 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "InteractableMother.generated.h"
-
+#include "ClickableMother.generated.h"
+class UInteractor;
 UCLASS()
-class SUBKRONICA_API AInteractableMother : public AActor
+class SUBKRONICA_API AClickableMother : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AInteractableMother();
-
-	
-	
+	AClickableMother();
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,22 +23,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly)
-	bool Grabbed = false;
 
 	UPROPERTY(EditDefaultsOnly)
-	bool PickedUp = false;
-
-	//Pick up control
-	virtual void Holding();
-	virtual void letGo();
+	bool LookedAt = false;
 
 	virtual void Action();
-	virtual void Shoot();
-
-
-	class APlayerController* PlayerController = nullptr;
-	class APlayerCharacter* Player = nullptr;
-	class UCameraComponent* PlayerCam = nullptr;
 	
 };

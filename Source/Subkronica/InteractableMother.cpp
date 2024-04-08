@@ -2,6 +2,11 @@
 
 
 #include "InteractableMother.h"
+#include "PlayerCharacter.h"
+#include "Grabber.h"
+#include "PlayerCharacter.h"
+#include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AInteractableMother::AInteractableMother()
@@ -11,10 +16,31 @@ AInteractableMother::AInteractableMother()
 
 }
 
+
 // Called when the game starts or when spawned
 void AInteractableMother::BeginPlay()
 {
 	Super::BeginPlay();
+	
+
+	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	
+	Player = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+	if (Player)
+	{
+		PlayerCam = Player->FindComponentByClass<UCameraComponent>();
+	}
+
+	UStaticMeshComponent* RootMeshComponent = Cast<UStaticMeshComponent>(GetRootComponent());
+
+	if (RootMeshComponent)
+	{
+		RootMeshComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Block);
+
+	}
+	
+	
 	
 }
 
@@ -23,7 +49,23 @@ void AInteractableMother::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UE_LOG(LogTemp, Warning, TEXT("Is Grabbing: %d"), Grabbed);
+	//UE_LOG(LogTemp, Warning, TEXT("Is Grabbing: %d"), Grabbed);
 
+}
+
+void AInteractableMother::Holding()
+{
+}
+
+void AInteractableMother::letGo()
+{
+}
+
+void AInteractableMother::Action()
+{
+}
+
+void AInteractableMother::Shoot()
+{
 }
 

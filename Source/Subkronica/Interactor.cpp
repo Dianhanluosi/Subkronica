@@ -1,17 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "Interactor.h"
+#include "ClickableMother.h"
 #include "Grabber.h"
-#include "Engine/World.h" 
-#include "InteractableMother.h"
-#include "DrawDebugHelpers.h"
-#include "PlayerCharacter.h"
-#include "Kismet/GameplayStatics.h"
-#include "GameFramework/PlayerController.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "PlayerCharacter.h"
 
 // Sets default values for this component's properties
-UGrabber::UGrabber()
+UInteractor::UInteractor()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -22,26 +20,30 @@ UGrabber::UGrabber()
 
 
 // Called when the game starts
-void UGrabber::BeginPlay()
+void UInteractor::BeginPlay()
 {
 	Super::BeginPlay();
 
 	// ...
+	Grabber = GetOwner()->FindComponentByClass<UGrabber>();
+
+	
 	
 }
 
 
 // Called every frame
-void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UInteractor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//UE_LOG(LogTemp, Warning, TEXT("Interactable Pointer: %p"), Interactable)
-
-	LoseGrabbedItem();
+	IsLooking();
+	StopLooking();
+	
+	// ...
 }
 
-void UGrabber::Grab()
+void UInteractor::IsLooking()
 {
 	UPhysicsHandleComponent* PhysicsHandle =  GetPhysicsHandle();
 
@@ -60,67 +62,36 @@ void UGrabber::Grab()
 		AActor* HitActor = HitResult.GetActor();
 		if (!HitActor) return;
 
-		if (!Interactable)
+		if (!Clickable && !Grabber->Interactable)
 		{
-			Interactable = Cast<AInteractableMother>(HitActor);
+			Clickable = Cast<AClickableMother>(HitActor);
 			if (GetOwner())
 			{
-				Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))->Interactable = Interactable;
+				Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))->Clickable = Clickable;
 			}
 		}
-		if (Interactable)
+		if (Clickable)
 		{
-			Interactable->Grabbed = true;
+			Clickable->LookedAt = true;
 		}
 
 	}
-	
-
-	
-	
-	
 }
 
-void UGrabber::Release()
+void UInteractor::StopLooking()
 {
-	UPhysicsHandleComponent* PhysicsHandle =  GetPhysicsHandle();
-	
-	
-
-	if (Interactable)
+	if (Clickable && Grabber->Interactable ||
+		Clickable && FVector::Dist(Clickable->GetActorLocation(), GetComponentLocation()) >= MaxClickDistance ||
+		Clickable && !IsItemInView())
 	{
-		if (GetOwner())
-		{
-			Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))->Interactable = nullptr;
-		}
-		Interactable->Grabbed = false;
-		Interactable = nullptr;
-	}
-	
-	
-}
-
-void UGrabber::LoseGrabbedItem()
-{
-	UPhysicsHandleComponent* PhysicsHandle =  GetPhysicsHandle();
-	
-	
-	
-	if(Interactable && FVector::Dist(Interactable->GetActorLocation(), GetComponentLocation()) >= (MaxGrabDistance + LoseDistance) || Interactable && !IsItemInView())
-	{
-		if (GetOwner())
-		{
-			
-			Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))->Interactable = nullptr;
-		}
-		Interactable->Grabbed = false;
-		Interactable = nullptr;
+		Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))->Clickable = nullptr;
+		Clickable->LookedAt = false;
+		Clickable = nullptr;
 		
 	}
 }
 
-
-UPhysicsHandleComponent* UGrabber::GetPhysicsHandle() const
+UPhysicsHandleComponent* UInteractor::GetPhysicsHandle() const
 {
 	UPhysicsHandleComponent* Result =  GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 	if (Result == nullptr)
@@ -130,22 +101,22 @@ UPhysicsHandleComponent* UGrabber::GetPhysicsHandle() const
 	return Result;
 }
 
-bool UGrabber::GetGrabbableInReach(FHitResult& OutHitResult) const
+bool UInteractor::GetGrabbableInReach(FHitResult& OutHitResult) const
 {
 	FVector Start = GetComponentLocation();
-	FVector End = Start + GetForwardVector() * MaxGrabDistance;
+	FVector End = Start + GetForwardVector() * MaxClickDistance;
 
-	FCollisionShape Sphere = FCollisionShape::MakeSphere(GrabRadius);
+	FCollisionShape Sphere = FCollisionShape::MakeSphere(ClickRadius);
 	return GetWorld()->SweepSingleByChannel(
-		OutHitResult, Start, End, FQuat::Identity, ECC_GameTraceChannel1,Sphere);
+		OutHitResult, Start, End, FQuat::Identity, ECC_GameTraceChannel2,Sphere);
 
 	
 
 }
 
-bool UGrabber::IsItemInView() const
+bool UInteractor::IsItemInView() const
 {
-	if (!Interactable) return false;
+	if (!Clickable) return false;
 
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (!PlayerController) return false;
@@ -154,7 +125,8 @@ bool UGrabber::IsItemInView() const
 	FRotator PlayerViewPointRotation;
 	PlayerController->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
 
-	FVector ToItem = Interactable->GetActorLocation() - PlayerViewPointLocation;
+	FVector ToItem = Clickable->GetActorLocation() - PlayerViewPointLocation;
+	
 	ToItem.Normalize();
 
 	FVector PlayerViewPointDirection = PlayerViewPointRotation.Vector();
@@ -171,5 +143,4 @@ bool UGrabber::IsItemInView() const
 	return AngleDegrees <= PlayerFOV / 2;
 	
 }
-
 

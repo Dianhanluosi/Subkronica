@@ -50,15 +50,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
 	FString Crouching = "Crouch";
 	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
-	FString Hold = "Hold";
-	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
 	FString Pee = "Pee";
 	
 	//Action
 	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
 	FString Jumping = "Jump";
 	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
-	FString Click = "Interact";
+	FString Hold = "Hold";
+	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
+	FString LeftClick = "Interact";
+	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
+	FString RightClick = "Shoot";
 	// UPROPERTY(EditDefaultsOnly, Category = "Control Action")
 	// FString RightClick = "RightClick";
 	// UPROPERTY(EditDefaultsOnly, Category = "Control Action")
@@ -106,6 +108,9 @@ public:
 	float CrouchRatio = 0.4f;
 	UPROPERTY(EditDefaultsOnly)
 	float CrouchHeight;
+
+	class AInteractableMother* Interactable;
+	class AClickableMother* Clickable;
 	
 private:
 	//Set up movement
@@ -121,13 +126,15 @@ private:
 
 	//Hold things
 	//UPROPERTY()
-	//class UGrabber *Grabber;
+	class UGrabber *Grabber;
 	
-	void HoldThings(float AxisValue);
+	void HoldThings();
+	void LetGoOfThings();
 
 	bool IsHolding = false;
 
-	
+	void Interact();
+	void Shoot();
 	
 	
 	

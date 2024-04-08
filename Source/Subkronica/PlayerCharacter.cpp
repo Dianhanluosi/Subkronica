@@ -9,6 +9,7 @@
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "InteractableMother.h"
+#include "ClickableMother.h"
 #include "Grabber.h"
 
 // Sets default values
@@ -47,7 +48,7 @@ void APlayerCharacter::BeginPlay()
 	float OriginalHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 	CrouchHeight = -(OriginalHeight * CrouchRatio);
 
-	//Grabber = FindComponentByClass<UGrabber>();
+	Grabber = FindComponentByClass<UGrabber>();
 	
 }
 
@@ -101,9 +102,14 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAxis(*Crouching, this, &APlayerCharacter::CrouchCtrl);
 
-	PlayerInputComponent->BindAxis(*Hold, this, &APlayerCharacter::HoldThings);
+	PlayerInputComponent->BindAction(*Hold, EInputEvent::IE_Pressed, this, &APlayerCharacter::HoldThings);
+	PlayerInputComponent->BindAction(*Hold, EInputEvent::IE_Released, this, &APlayerCharacter::LetGoOfThings);
 
 	PlayerInputComponent->BindAction(*Jumping, EInputEvent::IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction(*LeftClick, EInputEvent::IE_Pressed, this, &APlayerCharacter::Interact);
+	PlayerInputComponent->BindAction(*RightClick, EInputEvent::IE_Pressed, this, &APlayerCharacter::Shoot);
+
+	
 	
 
 }
@@ -239,26 +245,53 @@ void APlayerCharacter::CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult)
 	//Super::CalcCamera(DeltaTime, OutResult);
 }
 
-void APlayerCharacter::HoldThings(float AxisValue)
+void APlayerCharacter::HoldThings()
 {
-	if (FindComponentByClass<UGrabber>())
+	if (Grabber)
 	{
-		if (AxisValue == 1)
+		if (!IsHolding)
 		{
-			if (!IsHolding)
-			{
-				FindComponentByClass<UGrabber>()->Grab();
-				IsHolding = true;
-			}
+			Grabber->Grab();
+			IsHolding = true;
 		}
-		else if (IsHolding)
-		{
-			FindComponentByClass<UGrabber>()->Release();
-			IsHolding = false;
-		}
+		
 	}
 	
 	
+}
+
+void APlayerCharacter::LetGoOfThings()
+{
+	if (Grabber)
+	{
+		
+		if (IsHolding)
+		{
+			Grabber->Release();
+			IsHolding = false;
+		}
+	}
+}
+
+void APlayerCharacter::Interact()
+{
+	if (Interactable)
+	{
+		Interactable->Action();
+	}
+	if (!Interactable && Clickable)
+	{
+		Clickable->Action();
+	}
+}
+
+void APlayerCharacter::Shoot()
+{
+	if (Interactable)
+	{
+		Interactable->Shoot();
+		Grabber->Release();
+	}
 }
 
 

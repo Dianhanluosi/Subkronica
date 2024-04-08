@@ -4,17 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
-#include "Grabber.generated.h"
+#include "Interactor.generated.h"
 
-class AInteractableMother;
+class AClickableMother;
+class UGrabber;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class SUBKRONICA_API UGrabber : public USceneComponent
+class SUBKRONICA_API UInteractor : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UGrabber();
+	UInteractor();
 
 protected:
 	// Called when the game starts
@@ -24,32 +25,27 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UFUNCTION(BlueprintCallable)
-	void Grab();
-	
-	UFUNCTION(BlueprintCallable)
-	void Release();
+	AClickableMother* Clickable = nullptr;
 
 	UFUNCTION(BlueprintCallable)
-	void LoseGrabbedItem();
+	void IsLooking();
 
-	AInteractableMother* Interactable = nullptr;
+	UFUNCTION(BlueprintCallable)
+	void StopLooking();
 
 private:
 	UPROPERTY(EditAnywhere)
-	float MaxGrabDistance = 400;
+	float MaxClickDistance = 400;
 
 	UPROPERTY(EditAnywhere)
-	float GrabRadius = 100;
-
-	UPROPERTY(EditAnywhere)
-	float LoseDistance = 100;
-
-
+	float ClickRadius = 100;
+	
 	class UPhysicsHandleComponent* GetPhysicsHandle() const;
 
 	bool GetGrabbableInReach(FHitResult& OutHitResult) const;
 
 	bool IsItemInView() const;
-		
+	
+	UGrabber* Grabber = nullptr;
+	
 };
