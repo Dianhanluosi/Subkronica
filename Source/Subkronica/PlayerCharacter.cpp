@@ -13,6 +13,7 @@
 #include "Grabber.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "GameFramework/Character.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -54,7 +55,7 @@ void APlayerCharacter::BeginPlay()
 	GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
 
 	float OriginalHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
-	CrouchHeight = -(OriginalHeight * CrouchRatio);
+	CrouchHeight = OriginalHeight * CrouchRatio;
 
 	Grabber = FindComponentByClass<UGrabber>();
 
@@ -67,6 +68,41 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+	// if (GetCapsuleComponent())
+	// {
+	// 	float HalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+	//
+	// 	// Log the half-height to the console
+	// 	UE_LOG(LogTemp, Warning, TEXT("Capsule Half-Height: %f"), HalfHeight);
+	// }
+
+	// if (Cam)
+	// {
+	// 	FVector CameraLocation = Cam->GetComponentLocation();
+	// 	//UE_LOG(LogTemp, Warning, TEXT(" %f"), BaseEyeHeight);
+	// 	UE_LOG(LogTemp, Warning, TEXT(" %f"), CameraLocation.Z);	
+	// }
+
+	// if (Cam)
+	// {
+	// 	FVector CameraLocation = Cam->GetRelativeLocation();
+	// 	//UE_LOG(LogTemp, Warning, TEXT(" %f"), BaseEyeHeight);
+	// 	UE_LOG(LogTemp, Warning, TEXT(" %f"), CameraLocation.Z);	
+	// }
+
+	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	if (MovementComponent)
+	{
+		EMovementMode CurrentMode = MovementComponent->MovementMode; // Retrieve current movement mode
+        
+		// Example: Log current movement mode
+		UE_LOG(LogTemp, Log, TEXT("Current Movement Mode: %d"), static_cast<int32_t>(CurrentMode));
+	
+		
+	}
+
+	
 	// Get the current velocity
 	FVector Velocity = GetVelocity();
     
@@ -92,9 +128,12 @@ void APlayerCharacter::Tick(float DeltaTime)
 		}
 	}
 
+	
+	ClimbCtrl(IsClimbing);
+
 	//crouch transition setup
-	float CroucHInterpTime = FMath::Min(1.f, CrouchSpeed * DeltaTime);
-	CrouchEyeOffSet = (1.f - CroucHInterpTime) * CrouchEyeOffSet;
+	// float CroucHInterpTime = FMath::Min(1.f, CrouchSpeed * DeltaTime);
+	// CrouchEyeOffSet = (1.f - CroucHInterpTime) * CrouchEyeOffSet;
 
 }
 
@@ -105,19 +144,33 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAxis(*MoveForward, this, &APlayerCharacter::MoveFowardCtrl);
 	PlayerInputComponent->BindAxis(*MoveRight, this, &APlayerCharacter::MoveRightCtrl);
-	PlayerInputComponent->BindAxis(*Sprint, this, &APlayerCharacter::SprintCtrl);
 
+	if (!IsClimbing)
+	{
+		PlayerInputComponent->BindAxis(*Sprint, this, &APlayerCharacter::SprintCtrl);
+	}
+		
 	PlayerInputComponent->BindAxis(*LookUp, this, &APlayerCharacter::LookUpCtrl);
 	PlayerInputComponent->BindAxis(*TurnRight, this, &APlayerCharacter::TurnRightCtrl);
 
-	PlayerInputComponent->BindAxis(*Crouching, this, &APlayerCharacter::CrouchCtrl);
+	if (!IsClimbing)
+	{
+		PlayerInputComponent->BindAxis(*Crouching, this, &APlayerCharacter::CrouchCtrl);
+	}
 
-	PlayerInputComponent->BindAxis(*Pee, this, &APlayerCharacter::PeeCtrl);
-
+	if (!IsClimbing)
+	{
+		PlayerInputComponent->BindAxis(*Pee, this, &APlayerCharacter::PeeCtrl);
+	}
+		
 	PlayerInputComponent->BindAction(*Hold, EInputEvent::IE_Pressed, this, &APlayerCharacter::HoldThings);
 	PlayerInputComponent->BindAction(*Hold, EInputEvent::IE_Released, this, &APlayerCharacter::LetGoOfThings);
 
-	PlayerInputComponent->BindAction(*Jumping, EInputEvent::IE_Pressed, this, &ACharacter::Jump);
+	if (!IsClimbing)
+	{
+		PlayerInputComponent->BindAction(*Jumping, EInputEvent::IE_Pressed, this, &ACharacter::Jump);
+
+	}
 	PlayerInputComponent->BindAction(*LeftClick, EInputEvent::IE_Pressed, this, &APlayerCharacter::Interact);
 	PlayerInputComponent->BindAction(*RightClick, EInputEvent::IE_Pressed, this, &APlayerCharacter::Shoot);
 
@@ -126,15 +179,33 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 }
 
+FVector APlayerCharacter::GetCharacterScale()
+{
+	return GetActorScale3D();
+}
+
+void APlayerCharacter::ClimbCtrl(bool bClimb)
+{
+	 if(bClimb)
+	 {
+	 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+	 }
+	 else
+	 {
+	}
+}
+
 void APlayerCharacter::MoveFowardCtrl(float AxisValue)
 {
-	AddMovementInput(GetActorForwardVector() * AxisValue * MoveSpeed * GetWorld()->GetDeltaSeconds());
-	//UE_LOG(LogTemp, Log, TEXT("MoveSpeed: %f"), MoveSpeed);
-
-	// if (CamShake == nullptr)
-	//  {
-	//  	CamShake = Cast<UPlayerCharacterCameraShaker>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(UPlayerCharacterCameraShaker::StaticClass()));
-	//  }
+	if (!IsClimbing)
+	{
+		AddMovementInput(GetActorForwardVector() * AxisValue * MoveSpeed * GetWorld()->GetDeltaSeconds());
+	}
+	else
+	{
+		AddMovementInput(GetActorUpVector()  * AxisValue * MoveSpeed * GetWorld()->GetDeltaSeconds());
+	}
+	
 	
 }
 
@@ -187,7 +258,7 @@ void APlayerCharacter::CrouchCtrl(float AxisValue)
 	if (AxisValue == 1)
 	{
 		//Crouch();
-		OnStartCrouch(CrouchHeight, CrouchHeight);
+		OnStartCrouch(CrouchHeight, CrouchHeight * GetCharacterScale().Z);
 		bIsCrouching = true;
 		GetCharacterMovement()->MaxWalkSpeed = CrouchWalkingSpeed;
 		GetCharacterMovement()->JumpZVelocity = 0;
@@ -197,7 +268,7 @@ void APlayerCharacter::CrouchCtrl(float AxisValue)
 		//UnCrouch();
 		if (bIsCrouching)
 		{
-			OnEndCrouch(-CrouchHeight, -CrouchHeight);
+			OnEndCrouch(CrouchHeight, CrouchHeight * GetCharacterScale().Z);
 			bIsCrouching = false;
 			
 		}
@@ -224,11 +295,16 @@ void APlayerCharacter::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHei
 		return;
 	}
 
-	float StartBaseEyeHeight = BaseEyeHeight;
-	Super::OnStartCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
-	CrouchEyeOffSet.Z += StartBaseEyeHeight - BaseEyeHeight + HalfHeightAdjust;
-	Cam->SetRelativeLocation(FVector(0,0,BaseEyeHeight), false);
-	//CrouchHeight = -CrouchHeight;
+	//float StartBaseEyeHeight = BaseEyeHeight;
+
+	UCapsuleComponent* Capsule = GetCapsuleComponent();
+	if (Capsule)
+	{
+		Capsule->SetCapsuleHalfHeight(HalfHeightAdjust, true);
+	}
+	
+	//CrouchEyeOffSet.Z -= StartBaseEyeHeight - BaseEyeHeight + HalfHeightAdjust;
+	//Cam->SetRelativeLocation(FVector(0,0,BaseEyeHeight- (HalfHeightAdjust/CrouchRatio - HalfHeightAdjust)), false);
 }
 
 void APlayerCharacter::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
@@ -237,12 +313,17 @@ void APlayerCharacter::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeigh
 	{
 		return;
 	}
-
-	float StartBaseEyeHeight = BaseEyeHeight;
-	Super::OnEndCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
-	CrouchEyeOffSet.Z += StartBaseEyeHeight - BaseEyeHeight - HalfHeightAdjust;
-	Cam->SetRelativeLocation(FVector(0,0,BaseEyeHeight), false);
-	//CrouchHeight = -CrouchHeight;
+	
+	//float StartBaseEyeHeight = BaseEyeHeight;
+	
+	UCapsuleComponent* Capsule = GetCapsuleComponent();
+	if (Capsule)
+	{
+		Capsule->SetCapsuleHalfHeight(HalfHeightAdjust/CrouchRatio, true);
+	}
+	
+	//CrouchEyeOffSet.Z -= StartBaseEyeHeight - BaseEyeHeight - HalfHeightAdjust;
+	//Cam->SetRelativeLocation(FVector(0,0,BaseEyeHeight), false);
 
 }
 
@@ -310,7 +391,7 @@ void APlayerCharacter::PeeCtrl(float AxisValue)
 {
 	if (AxisValue == 1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Peeing!"));
+		//UE_LOG(LogTemp, Warning, TEXT("Peeing!"));
 		if (!bIsCrouching)
 		{
 			if (!IsPeeing)
@@ -343,7 +424,7 @@ void APlayerCharacter::PeeCtrl(float AxisValue)
 				PeeParticle->Deactivate();
 			
 		}
-		UE_LOG(LogTemp, Warning, TEXT("Not Peeing!"));
+		//UE_LOG(LogTemp, Warning, TEXT("Not Peeing!"));
 	}
 }
 

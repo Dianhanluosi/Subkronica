@@ -41,20 +41,20 @@ UPlayerCharacterCameraShaker::UPlayerCharacterCameraShaker()
 				OscillationBlendOutTime = 0.2f; // Smooth, quick end
 
 				// Rotational Oscillation (Enhance this a bit for walking)
-				RotOscillation.Pitch.Amplitude = 2.0f; // Slightly more noticeable pitch movement
-				RotOscillation.Pitch.Frequency = 0.8f; // Adjust for a natural feel, not too fast
+				RotOscillation.Pitch.Amplitude = 3.0f; // Slightly more noticeable pitch movement
+				RotOscillation.Pitch.Frequency = 1.0f; // Adjust for a natural feel, not too fast
 				RotOscillation.Pitch.InitialOffset = EInitialOscillatorOffset::EOO_OffsetZero;
 				RotOscillation.Pitch.Waveform = EOscillatorWaveform::PerlinNoise; // Smooth natural movement
 
 				// Lateral (Y) Oscillation (Enhance sideways shake for walking)
-				LocOscillation.Y.Amplitude = 0.4f; // More noticeable side to side movement
-				LocOscillation.Y.Frequency = 0.8f; // Adjusted for a more natural movement rhythm
+				LocOscillation.Y.Amplitude = 0.8f; // More noticeable side to side movement
+				LocOscillation.Y.Frequency = 1.5f; // Adjusted for a more natural movement rhythm
 				LocOscillation.Y.InitialOffset = EInitialOscillatorOffset::EOO_OffsetZero;
 				LocOscillation.Y.Waveform = EOscillatorWaveform::PerlinNoise;
 
 				// Vertical (Z) Oscillation (Enhance this for a more pronounced 'bob')
-				LocOscillation.Z.Amplitude = 1.0f; // More noticeable up and down movement
-				LocOscillation.Z.Frequency = 2.0f; // Adjusted to better match the pace of walking
+				LocOscillation.Z.Amplitude = 2.0f; // More noticeable up and down movement
+				LocOscillation.Z.Frequency = 3.0f; // Adjusted to better match the pace of walking
 				LocOscillation.Z.InitialOffset = EInitialOscillatorOffset::EOO_OffsetZero;
 				LocOscillation.Z.Waveform = EOscillatorWaveform::PerlinNoise;
 
@@ -65,18 +65,18 @@ UPlayerCharacterCameraShaker::UPlayerCharacterCameraShaker()
 				OscillationBlendInTime = 0.1f;
 				OscillationBlendOutTime = 0.2f;
 				
-				RotOscillation.Pitch.Amplitude = 25.0f;
+				RotOscillation.Pitch.Amplitude = 6.0f;
 				RotOscillation.Pitch.Frequency = 2.0f;
 				RotOscillation.Pitch.InitialOffset = EInitialOscillatorOffset::EOO_OffsetZero;
 				RotOscillation.Pitch.Waveform = EOscillatorWaveform::PerlinNoise;
 				
-				LocOscillation.Y.Amplitude = 5.0f;
-				LocOscillation.Y.Frequency = 1.0f;
+				LocOscillation.Y.Amplitude = 1.6f;
+				LocOscillation.Y.Frequency = 3.0f;
 				LocOscillation.Y.InitialOffset = EInitialOscillatorOffset::EOO_OffsetZero;
 				LocOscillation.Y.Waveform = EOscillatorWaveform::PerlinNoise;
 				
-				LocOscillation.Z.Amplitude = 5.0f;
-				LocOscillation.Z.Frequency = 1.0f;
+				LocOscillation.Z.Amplitude = 4.0f;
+				LocOscillation.Z.Frequency = 6.0f;
 				LocOscillation.Z.InitialOffset = EInitialOscillatorOffset::EOO_OffsetZero;
 				LocOscillation.Z.Waveform = EOscillatorWaveform::PerlinNoise;
 

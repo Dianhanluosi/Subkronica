@@ -44,6 +44,8 @@ public:
 
 	//Set up control keywords
 	//Axis
+	UPROPERTY(EditAnywhere, Category = "Control Axis")
+	bool IsClimbing = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
 	FString MoveForward = "MoveForward";
 	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
@@ -116,11 +118,14 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	float CrouchHeight;
 
+	FVector GetCharacterScale();
+
 	class AInteractableMother* Interactable;
 	class AClickableMother* Clickable;
 	
 private:
 	//Set up movement
+	void ClimbCtrl (bool bClimb);
 	void MoveFowardCtrl (float AxisValue);
 	void MoveRightCtrl (float AxisValue);
 	void SprintCtrl (float AxisValue);
@@ -159,3 +164,5 @@ private:
 	float MaxPitchAngle = 85;
 	
 };
+
+
