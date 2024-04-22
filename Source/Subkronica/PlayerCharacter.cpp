@@ -260,6 +260,7 @@ void APlayerCharacter::CrouchCtrl(float AxisValue)
 		//Crouch();
 		OnStartCrouch(CrouchHeight, CrouchHeight * GetCharacterScale().Z);
 		bIsCrouching = true;
+		MoveSpeed = CrouchWalkingSpeed;
 		GetCharacterMovement()->MaxWalkSpeed = CrouchWalkingSpeed;
 		GetCharacterMovement()->JumpZVelocity = 0;
 	}
@@ -272,13 +273,22 @@ void APlayerCharacter::CrouchCtrl(float AxisValue)
 			bIsCrouching = false;
 			
 		}
-		if (!IsRunning)
+		if (IsClimbing)
 		{
+			MoveSpeed = ClimbingSpeed;
+			GetCharacterMovement()->MaxWalkSpeed = ClimbingSpeed;
+			GetCharacterMovement()->JumpZVelocity = WalkingJumpSpeed;
+
+		}
+		else if (!IsRunning)
+		{
+			MoveSpeed = WalkingSpeed;
 			GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
 			GetCharacterMovement()->JumpZVelocity = WalkingJumpSpeed;
 		}
 		else
 		{
+			MoveSpeed = RunningSpeed;
 			GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
 			GetCharacterMovement()->JumpZVelocity = RunningJumpSpeed;
 		}

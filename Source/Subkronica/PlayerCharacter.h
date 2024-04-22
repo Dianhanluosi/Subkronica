@@ -86,6 +86,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
 	float WalkingSpeed = 200;
 	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
+	float ClimbingSpeed = 200;
+	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
 	float MoveSpeed = 100;
 
 	//Set up jump speed
