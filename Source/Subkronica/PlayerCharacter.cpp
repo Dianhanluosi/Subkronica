@@ -131,6 +131,32 @@ void APlayerCharacter::Tick(float DeltaTime)
 	
 	ClimbCtrl(IsClimbing);
 
+	if (bIsCrouching)
+	{
+		MoveSpeed = CrouchWalkingSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = CrouchWalkingSpeed;
+		GetCharacterMovement()->JumpZVelocity = 0;
+	}
+	else if (IsClimbing)
+	{
+		MoveSpeed = ClimbingSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
+		GetCharacterMovement()->MaxFlySpeed = ClimbingSpeed;
+		GetCharacterMovement()->JumpZVelocity = 0;
+	}
+	else if (!IsRunning)
+	{
+		MoveSpeed = WalkingSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
+		GetCharacterMovement()->JumpZVelocity = WalkingJumpSpeed;
+	}
+	else
+	{
+		MoveSpeed = RunningSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
+		GetCharacterMovement()->JumpZVelocity = RunningJumpSpeed;
+	}
+
 	//crouch transition setup
 	// float CroucHInterpTime = FMath::Min(1.f, CrouchSpeed * DeltaTime);
 	// CrouchEyeOffSet = (1.f - CroucHInterpTime) * CrouchEyeOffSet;
@@ -155,7 +181,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	if (!IsClimbing)
 	{
-		PlayerInputComponent->BindAxis(*Crouching, this, &APlayerCharacter::CrouchCtrl);
+		PlayerInputComponent->BindAction(*Crouching, EInputEvent::IE_Pressed, this, &APlayerCharacter::CrouchCtrl);
+		//PlayerInputComponent->BindAxis(*Crouching, this, &APlayerCharacter::CrouchCtrl);
 	}
 
 	if (!IsClimbing)
@@ -253,45 +280,20 @@ void APlayerCharacter::TurnRightCtrl(float AxisValue)
 	AddControllerYawInput(AxisValue * RotationRateRight * GetWorld()->GetDeltaSeconds());
 }
 
-void APlayerCharacter::CrouchCtrl(float AxisValue)
+
+void APlayerCharacter::CrouchCtrl()
 {
-	if (AxisValue == 1)
+	if (!bIsCrouching)
 	{
 		//Crouch();
 		OnStartCrouch(CrouchHeight, CrouchHeight * GetCharacterScale().Z);
 		bIsCrouching = true;
-		MoveSpeed = CrouchWalkingSpeed;
-		GetCharacterMovement()->MaxWalkSpeed = CrouchWalkingSpeed;
-		GetCharacterMovement()->JumpZVelocity = 0;
 	}
-	else
+	else 
 	{
-		//UnCrouch();
-		if (bIsCrouching)
-		{
+		
 			OnEndCrouch(CrouchHeight, CrouchHeight * GetCharacterScale().Z);
 			bIsCrouching = false;
-			
-		}
-		if (IsClimbing)
-		{
-			MoveSpeed = ClimbingSpeed;
-			GetCharacterMovement()->MaxWalkSpeed = ClimbingSpeed;
-			GetCharacterMovement()->JumpZVelocity = WalkingJumpSpeed;
-
-		}
-		else if (!IsRunning)
-		{
-			MoveSpeed = WalkingSpeed;
-			GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
-			GetCharacterMovement()->JumpZVelocity = WalkingJumpSpeed;
-		}
-		else
-		{
-			MoveSpeed = RunningSpeed;
-			GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
-			GetCharacterMovement()->JumpZVelocity = RunningJumpSpeed;
-		}
 		
 	}
 	

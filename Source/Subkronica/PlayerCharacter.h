@@ -56,8 +56,7 @@ public:
 	FString TurnRight = "TurnRight";
 	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
 	FString Sprint = "Sprint";
-	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
-	FString Crouching = "Crouch";
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
 	FString Pee = "Pee";
 	
@@ -70,6 +69,8 @@ public:
 	FString LeftClick = "Interact";
 	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
 	FString RightClick = "Shoot";
+	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
+	FString Crouching = "Crouch";
 	// UPROPERTY(EditDefaultsOnly, Category = "Control Action")
 	// FString RightClick = "RightClick";
 	// UPROPERTY(EditDefaultsOnly, Category = "Control Action")
@@ -98,8 +99,9 @@ public:
 
 	//Crouch stuff
 	//Set up crouch
-	void CrouchCtrl(float AxisValue);
-
+	//void CrouchCtrl(float AxisValue);
+	void CrouchCtrl();
+	
 	void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
 
 	void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
