@@ -41,7 +41,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	float WaitTime = 5.0f;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsMoving;
 
 	UPROPERTY(VisibleAnywhere)
@@ -49,9 +49,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class USoundBase* ArriveSound;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UAudioComponent* AC;
+
+	UAudioComponent* FindAudioComponentByName(AActor* Actor, const FName& ComponentName);
+	
 
 private:
 	struct FTimerHandle PauseTimerHandle;

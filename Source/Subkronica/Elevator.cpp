@@ -24,7 +24,10 @@ void AElevator::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AC = FindComponentByClass<UAudioComponent>();
+	//AC = FindComponentByClass<UAudioComponent>();
+	//AC = FindAudioComponentByName(TEXT("AudioComp"));
+
+	AC = FindAudioComponentByName(this, TEXT("Arrival"));
 	
 }
 
@@ -125,5 +128,27 @@ void AElevator::PauseAtPosition()
 	//UE_LOG(LogTemp, Warning, TEXT("1"));
 	bReadyToMove = true;  // After the pause, ready to move to the next target
 	//bIsMoving = false;   
+}
+
+UAudioComponent* AElevator::FindAudioComponentByName(AActor* Actor, const FName& ComponentName)
+{
+	if (!Actor)
+	{
+		return nullptr;
+	}
+
+	// Iterate through all components of type UAudioComponent
+	TArray<UAudioComponent*> Components;
+	Actor->GetComponents<UAudioComponent>(Components);
+	for (UAudioComponent* Component : Components)
+	{
+		// Check if the component's name matches the specified name
+		if (Component->GetFName() == ComponentName)
+		{
+			return Component;
+		}
+	}
+
+	return nullptr; 
 }
 
