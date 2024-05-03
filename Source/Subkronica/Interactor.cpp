@@ -45,50 +45,48 @@ void UInteractor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 void UInteractor::IsLooking()
 {
-	UPhysicsHandleComponent* PhysicsHandle =  GetPhysicsHandle();
-
-	if (PhysicsHandle == nullptr)
+	UPhysicsHandleComponent* PhysicsHandle = GetPhysicsHandle();
+	if (!PhysicsHandle || !Grabber)
 	{
 		return;
 	}
-	
+    
 	FHitResult HitResult;
-	bool HasHit = GetGrabbableInReach(HitResult);
-
-	if (HasHit)
+	if (GetGrabbableInReach(HitResult))
 	{
-		UPrimitiveComponent* Hitcomponent = HitResult.GetComponent();
-		
+		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
 		AActor* HitActor = HitResult.GetActor();
-		if (!HitActor) return;
-
-		if (!Clickable && !Grabber->Interactable)
+		if (HitActor && !Clickable && !Grabber->Interactable)
 		{
 			Clickable = Cast<AClickableMother>(HitActor);
-			if (GetOwner())
+			APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+			if (PlayerCharacter)
 			{
-				Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))->Clickable = Clickable;
+				PlayerCharacter->Clickable = Clickable;
 			}
 		}
 		if (Clickable)
 		{
 			Clickable->LookedAt = true;
 		}
-
 	}
 }
 
 void UInteractor::StopLooking()
 {
-	if (Clickable && Grabber->Interactable ||
-		Clickable && FVector::Dist(Clickable->GetActorLocation(), GetComponentLocation()) >= MaxClickDistance ||
-		Clickable && !IsItemInView())
-	{
-		Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))->Clickable = nullptr;
-		Clickable->LookedAt = false;
-		Clickable = nullptr;
-		
-	}
+	FHitResult HitResult;
+    if (!GetGrabbableInReach(HitResult) || !Clickable ||
+        FVector::Dist(Clickable->GetActorLocation(), GetComponentLocation()) >= MaxClickDistance ||
+        !IsItemInView())
+    {
+        APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+        if (PlayerCharacter && Clickable)
+        {
+            PlayerCharacter->Clickable = nullptr;
+            Clickable->LookedAt = false;
+            Clickable = nullptr;
+        }
+    }
 }
 
 UPhysicsHandleComponent* UInteractor::GetPhysicsHandle() const
@@ -106,10 +104,31 @@ bool UInteractor::GetGrabbableInReach(FHitResult& OutHitResult) const
 	FVector Start = GetComponentLocation();
 	FVector End = Start + GetForwardVector() * MaxClickDistance;
 
-	FCollisionShape Sphere = FCollisionShape::MakeSphere(ClickRadius);
-	return GetWorld()->SweepSingleByChannel(
-		OutHitResult, Start, End, FQuat::Identity, ECC_GameTraceChannel2,Sphere);
+	// FCollisionShape Sphere = FCollisionShape::MakeSphere(ClickRadius);
+	// return GetWorld()->SweepSingleByChannel(
+	// 	OutHitResult, Start, End, FQuat::Identity, ECC_GameTraceChannel2,Sphere);
 
+	// return GetWorld()->LineTraceSingleByChannel(
+	// 	OutHitResult, Start, End, ECC_GameTraceChannel2);
+
+	bool bResult = GetWorld()->LineTraceSingleByChannel(
+	   OutHitResult, Start, End, ECC_GameTraceChannel2, FCollisionQueryParams(FName(TEXT("")), false, GetOwner()));
+
+	// Draw the debug line
+	// FColor LineColor = bResult ? FColor::Green : FColor::Red; // Green if hit, Red if no hit
+	// float Duration = 5.0f; // Duration the line should remain visible (in seconds)
+	// DrawDebugLine(
+	// 	GetWorld(),
+	// 	Start,
+	// 	End,
+	// 	LineColor,
+	// 	false,        // bPersistentLines
+	// 	Duration,
+	// 	0,            // DepthPriority
+	// 	5.0f          // Thickness
+	// );
+
+	return bResult;
 	
 
 }

@@ -38,7 +38,7 @@ private:
 	float MaxClickDistance = 400;
 
 	UPROPERTY(EditAnywhere)
-	float ClickRadius = 100;
+	float ClickRadius = 0;
 	
 	class UPhysicsHandleComponent* GetPhysicsHandle() const;
 

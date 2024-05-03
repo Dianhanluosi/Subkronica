@@ -3,14 +3,19 @@
 
 #include "ElevatorClick.h"
 #include "Elevator.h"
+#include "Components/AudioComponent.h"
 
 AElevatorClick::AElevatorClick()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 }
 
 void AElevatorClick::BeginPlay()
 {
 	Super::BeginPlay();
+	AC = FindComponentByClass<UAudioComponent>();
+
 }
 
 void AElevatorClick::Tick(float DeltaTime)
@@ -23,6 +28,17 @@ void AElevatorClick::Action()
 	UE_LOG(LogTemp, Warning, TEXT("Action"));
 	if (ER)
 	{
-		ER->AddTargetPosition(ClickPosition);
+		if (AC)
+		{
+			if (!IsOn)
+			{
+				AC->SetSound(ClickSound);
+				AC->Play();
+				ER->AddTargetPosition(ClickPosition, this);
+				IsOn = true;
+			}
+			
+		}
+		
 	}
 }

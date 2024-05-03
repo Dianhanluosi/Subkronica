@@ -33,5 +33,14 @@ public:
 	class AElevator* ER;
 
 	void Action() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool IsOn;
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* ClickSound;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UAudioComponent* AC;
 	
 };

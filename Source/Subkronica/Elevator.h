@@ -26,7 +26,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	TArray<FVector> TargetPositions;
 
-	virtual void AddTargetPosition (FVector NewPosition);
+	UPROPERTY(EditAnywhere)
+	TArray<class AElevatorClick*> EC;
+
+	virtual void AddTargetPosition (FVector NewPosition, AElevatorClick* NewEC);
+
+	virtual void MoveTowardsTarget(float DeltaTime);
+
+	virtual void PauseAtPosition();
 
 	UPROPERTY(EditAnywhere)
 	float Speed = 100.0f;
@@ -34,14 +41,22 @@ public:
 	UPROPERTY(EditAnywhere)
 	float WaitTime = 5.0f;
 
-private:
-
-	void MoveTowardsTarget (float DeltaTime);
-
-	void PauseAtPosition();
-
-	struct FTimerHandle PauseTimerHandle;
-
+	UPROPERTY(VisibleAnywhere)
 	bool bIsMoving;
 
+	UPROPERTY(VisibleAnywhere)
+	bool bReadyToMove;
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* ArriveSound;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UAudioComponent* AC;
+
+private:
+	struct FTimerHandle PauseTimerHandle;
+
+
 };
+
+
