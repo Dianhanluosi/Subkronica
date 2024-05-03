@@ -2,6 +2,7 @@
 
 
 #include "ElevatorClick.h"
+#include "Elevator.h"
 
 AElevatorClick::AElevatorClick()
 {
@@ -19,5 +20,9 @@ void AElevatorClick::Tick(float DeltaTime)
 
 void AElevatorClick::Action()
 {
-	Super::Action();
+	UE_LOG(LogTemp, Warning, TEXT("Action"));
+	if (ER)
+	{
+		ER->AddTargetPosition(ClickPosition);
+	}
 }

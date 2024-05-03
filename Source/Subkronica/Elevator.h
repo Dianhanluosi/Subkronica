@@ -23,4 +23,25 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditAnywhere)
+	TArray<FVector> TargetPositions;
+
+	virtual void AddTargetPosition (FVector NewPosition);
+
+	UPROPERTY(EditAnywhere)
+	float Speed = 100.0f;
+
+	UPROPERTY(EditAnywhere)
+	float WaitTime = 5.0f;
+
+private:
+
+	void MoveTowardsTarget (float DeltaTime);
+
+	void PauseAtPosition();
+
+	struct FTimerHandle PauseTimerHandle;
+
+	bool bIsMoving;
+
 };

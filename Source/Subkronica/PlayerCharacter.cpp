@@ -97,7 +97,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 		EMovementMode CurrentMode = MovementComponent->MovementMode; // Retrieve current movement mode
         
 		// Example: Log current movement mode
-		UE_LOG(LogTemp, Log, TEXT("Current Movement Mode: %d"), static_cast<int32_t>(CurrentMode));
+		//UE_LOG(LogTemp, Log, TEXT("Current Movement Mode: %d"), static_cast<int32_t>(CurrentMode));
 	
 		
 	}

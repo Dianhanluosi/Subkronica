@@ -25,7 +25,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
+	UPROPERTY(EditAnywhere)
+	FVector ClickPosition;
+
+	UPROPERTY(EditAnywhere)
+	class AElevator* ER;
 
 	void Action() override;
 	
