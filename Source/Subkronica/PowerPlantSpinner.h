@@ -44,4 +44,51 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateRotation(float DeltaTime);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MinimumTemp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TerminalTemp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Temp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TempRiseRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TempFallRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TempCoolingRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsCooling;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsOverHeating;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float OverHeatCountdown;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float CountdownRemaining;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Explosion;
+
+	UFUNCTION(BlueprintCallable)
+	void ControlCountdown();
+		
+	UFUNCTION(BlueprintCallable)
+	void HandleCountdown();
+
+	FTimerHandle CountdownTimerHandle;
+
+	
+
+	
+
+	
+
 };
