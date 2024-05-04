@@ -54,6 +54,8 @@ public:
 	class UAudioComponent* AC;
 
 	UAudioComponent* FindAudioComponentByName(AActor* Actor, const FName& ComponentName);
+
+	
 	
 
 private:
