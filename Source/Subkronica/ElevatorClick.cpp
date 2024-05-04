@@ -32,8 +32,11 @@ void AElevatorClick::Action()
 		{
 			if (!IsOn)
 			{
-				AC->SetSound(ClickSound);
-				AC->Play();
+				if (ClickSound)
+				{
+					AC->SetSound(ClickSound);
+					AC->Play();
+				}
 				ER->AddTargetPosition(ClickPosition, this);
 				IsOn = true;
 			}

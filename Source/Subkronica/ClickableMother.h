@@ -24,7 +24,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool LookedAt = false;
 
 	virtual void Action();
