@@ -5,8 +5,11 @@
 #include "Components/AudioComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "NiagaraComponent.h"
+#include "NiagaraActor.h"
 #include "NiagaraFunctionLibrary.h"
 #include "PowerPlantSpinner.h"
+#include "Engine/SpotLight.h"
+#include "Components/SpotLightComponent.h"
 
 AWaterplantWheel::AWaterplantWheel()
 {
@@ -16,8 +19,7 @@ AWaterplantWheel::AWaterplantWheel()
 	RootComponent = WheelMesh;
 
 	WheelSound = CreateDefaultSubobject<UAudioComponent>(TEXT("WheelSound"));
-	WaterSound = CreateDefaultSubobject<UAudioComponent>(TEXT("WaterSound"));
-	RoarSound = CreateDefaultSubobject<UAudioComponent>(TEXT("RoarSound"));
+	//WaterSound = CreateDefaultSubobject<UAudioComponent>(TEXT("WaterSound"));
 }
 
 void AWaterplantWheel::BeginPlay()
@@ -26,12 +28,16 @@ void AWaterplantWheel::BeginPlay()
 
 	//WheelSound = FindAudioComponentByName(this, TEXT("WheelSound"));
 	//WaterSound = FindAudioComponentByName(this, TEXT("WaterSound"));
-	//RoarSound = FindAudioComponentByName(this, TEXT("RoarSound"));
 
 	if (WaterPlane)
 	{
 		WaterPlane->SetActorLocation(WaterPlaneStart);
 	}
+
+	// if (WaterSound)
+	// {
+	// 	WaterSound->Play();
+	// }
 	
 	
 }
@@ -42,16 +48,13 @@ void AWaterplantWheel::Tick(float DeltaTime)
 
 	if (SwitchedOn)
 	{
-		for (UNiagaraComponent* Waterfall : Waterfalls)
+		for (ANiagaraActor* Waterfall : Waterfalls)
 		{
-			if (Waterfall)
+			if (Waterfall && Waterfall->GetNiagaraComponent())
 			{
-				Waterfall->Activate(true);
+				//UE_LOG(LogTemp, Error, TEXT("Action"));
+				Waterfall->GetNiagaraComponent()->SetVisibility(true);
 			}
-		}
-		if (WaterSound)
-		{
-			WaterSound->Play();
 		}
 
 		if (WaterPlane)
@@ -64,16 +67,14 @@ void AWaterplantWheel::Tick(float DeltaTime)
 	}
 	else
 	{
-		for (UNiagaraComponent* Waterfall : Waterfalls)
+		for (ANiagaraActor* Waterfall : Waterfalls)
 		{
-			if (Waterfall)
+			if (Waterfall && Waterfall->GetNiagaraComponent())
 			{
-				Waterfall->Activate(false);
+				//Waterfall->GetNiagaraComponent()->Deactivate();
+				Waterfall->GetNiagaraComponent()->SetVisibility(false);
+
 			}
-		}
-		if (WaterSound)
-		{
-			WaterSound->Stop();
 		}
 	}
 
@@ -106,8 +107,20 @@ void AWaterplantWheel::Tick(float DeltaTime)
 
 		if (PlaneLocation.Z <= WaterPlaneStart.Z)
 		{
-			NoWater = true;
 			WaterPlane->SetActorLocation(WaterPlaneStart);
+			
+			NoWater = true;
+			for (ASpotLight* CausticsLight : CausticsLights)
+			{
+				if (CausticsLight && CausticsLight->GetLightComponent())
+				{
+					CausticsLight->GetLightComponent()->SetVisibility(false); // Activate the light
+					CausticsLight->GetLightComponent()->SetHiddenInGame(true); // Ensure it's not hidden in the game
+				}
+			}
+			
+
+			
 
 			if (Spinner)
 			{
@@ -117,6 +130,14 @@ void AWaterplantWheel::Tick(float DeltaTime)
 		else
 		{
 			NoWater = false;
+			for (ASpotLight* CausticsLight : CausticsLights)
+			{
+				if (CausticsLight && CausticsLight->GetLightComponent())
+				{
+					CausticsLight->GetLightComponent()->SetVisibility(true); // Activate the light
+					CausticsLight->GetLightComponent()->SetHiddenInGame(false); // Ensure it's not hidden in the game
+				}
+			}
 			if (Spinner)
 			{
 				Spinner->IsCooling = true;
@@ -124,7 +145,7 @@ void AWaterplantWheel::Tick(float DeltaTime)
 		}
 	}
 
-	if (EnoughWater)
+	if (EnoughWater && SwitchedOn)
 	{
 		SelfTurnOff();
 	}
@@ -149,13 +170,7 @@ void AWaterplantWheel::Action()
 		}
 	}
 
-	if (SwitchedOn)
-	{
-		if (RoarSound)
-		{
-			RoarSound->Play();
-		}
-	}
+	
 	
 }
 
@@ -175,14 +190,16 @@ void AWaterplantWheel::SelfTurnOff()
 {
 	SwitchedOn = false;
 
-	if (WheelSound)
-	{
-		if (WheelSoundClip1)
-		{
-			WheelSound->SetSound(WheelSoundClip2);
-			WheelSound->Play();
-		}
-	}
+	STO();
+	
+	// if (WheelSound)
+	// {
+	// 	if (WheelSoundClip1)
+	// 	{
+	// 		WheelSound->SetSound(WheelSoundClip2);
+	// 		WheelSound->Play();
+	// 	}
+	// }
 }
 
 UAudioComponent* AWaterplantWheel::FindAudioComponentByName(AActor* Actor, const FName& ComponentName)

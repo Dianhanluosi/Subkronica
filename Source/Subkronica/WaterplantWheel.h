@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ClickableMother.h"
+#include "Engine/SpotLight.h"
 #include "WaterplantWheel.generated.h"
 
 /**
@@ -29,6 +30,9 @@ public:
 
 	void SelfTurnOff();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void STO();
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class APowerPlantSpinner* Spinner;
 	
@@ -48,10 +52,13 @@ public:
 	float SwitchSpeed;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TArray<class UNiagaraComponent*> Waterfalls;
+	TArray<class ANiagaraActor*> Waterfalls;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	AActor* WaterPlane;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<class ASpotLight*> CausticsLights;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector WaterPlaneStart;
@@ -73,15 +80,11 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class USoundBase* WheelSoundClip1;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	class USoundBase* WheelSoundClip2;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	// class USoundBase* WheelSoundClip2;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UAudioComponent* WheelSound;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UAudioComponent* WaterSound;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UAudioComponent* RoarSound;
+	
 
 	UAudioComponent* FindAudioComponentByName(AActor* Actor, const FName& ComponentName);
 	
