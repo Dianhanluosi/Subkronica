@@ -1,3 +1,4 @@
 .uasset filter=lfs diff=lfs merge=lfs -text
 .umap filter=lfs diff=lfs merge=lfs -text
 Content/Movies/Metropolis[[:space:]](1927)[[:space:]]FULL[[:space:]]MOVIE.mp4 filter=lfs diff=lfs merge=lfs -text
+Content/Sound/Sewer/Exploring_Sewers_Late_At_Night_｜_HORROR_AMBIENCE_｜_3_Hours.uasset filter=lfs diff=lfs merge=lfs -text
