@@ -4,6 +4,7 @@
 #include "ElevatorClick.h"
 #include "Elevator.h"
 #include "Components/AudioComponent.h"
+#include "PowerPlantSpinner.h"
 
 AElevatorClick::AElevatorClick()
 {
@@ -21,27 +22,36 @@ void AElevatorClick::BeginPlay()
 void AElevatorClick::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (ER)
+	{
+		HasPower = ER->HasPower;
+	}
 }
 
 void AElevatorClick::Action()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Action"));
-	if (ER)
+	if (HasPower)
 	{
-		if (AC)
+		if (ER)
 		{
-			if (!IsOn)
+			if (AC)
 			{
-				if (ClickSound)
+				if (!IsOn)
 				{
-					AC->SetSound(ClickSound);
-					AC->Play();
+					if (ClickSound)
+					{
+						AC->SetSound(ClickSound);
+						AC->Play();
+					}
+					ER->AddTargetPosition(ClickPosition, this);
+					IsOn = true;
 				}
-				ER->AddTargetPosition(ClickPosition, this);
-				IsOn = true;
-			}
 			
-		}
+			}
 		
+		}
 	}
+	
 }

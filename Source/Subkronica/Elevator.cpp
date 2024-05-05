@@ -6,6 +6,7 @@
 #include "ClickableMother.h"
 #include "Components/AudioComponent.h"
 #include "ElevatorClick.h"
+#include "PowerPlantSpinner.h"
 
 // Sets default values
 AElevator::AElevator()
@@ -37,18 +38,44 @@ void AElevator::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-	MoveTowardsTarget(DeltaTime);
+	if (Spinner)
+	{
+		if (Spinner->IsOn)
+		{
+			HasPower = true;
+		}
+		// else
+		// {
+		// 	HasPower = false;
+		// }
+	}
+
+	if (!HasPower)
+	{
+		TargetPositions.Empty();
+	}
+
+	if (HasPower)
+	{
+		MoveTowardsTarget(DeltaTime);
+
+	}
+	
 	
 
 }
 
 void AElevator::AddTargetPosition(FVector NewPosition, AElevatorClick* NewEC)
 {
-	if (NewEC)
+	if (HasPower)
 	{
-		TargetPositions.Add(NewPosition);
-		EC.Add(NewEC);
+		if (NewEC)
+		{
+			TargetPositions.Add(NewPosition);
+			EC.Add(NewEC);
+		}
 	}
+	
 }
 
 

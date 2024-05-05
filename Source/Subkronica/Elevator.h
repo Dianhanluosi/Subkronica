@@ -55,7 +55,11 @@ public:
 
 	UAudioComponent* FindAudioComponentByName(AActor* Actor, const FName& ComponentName);
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool HasPower;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class APowerPlantSpinner* Spinner;
 	
 
 private:

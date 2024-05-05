@@ -42,5 +42,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UAudioComponent* AC;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool HasPower;
+	
 	
 };

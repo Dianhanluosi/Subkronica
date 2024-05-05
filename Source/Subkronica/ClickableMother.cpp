@@ -3,6 +3,7 @@
 
 #include "ClickableMother.h"
 #include "Interactor.h"
+#include "Components/StaticMeshComponent.h"
 
 // Sets default values
 AClickableMother::AClickableMother()
