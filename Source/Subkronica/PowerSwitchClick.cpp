@@ -22,6 +22,7 @@ void APowerSwitchClick::BeginPlay()
 {
 	Super::BeginPlay();
 	AC = FindComponentByClass<UAudioComponent>();
+	
 }
 
 void APowerSwitchClick::Tick(float DeltaTime)
