@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "InteractableMother.h"
-#include "Renderer/Private/RayTracing/RayTracingLighting.h"
 #include "InteractablePickUp.generated.h"
 
 /**

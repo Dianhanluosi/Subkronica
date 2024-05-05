@@ -73,15 +73,77 @@ void AInteractablePickUp::Holding()
 
 void AInteractablePickUp::UpdateRotation(const FRotator& CameraRotation)
 {
+	//Original
+	// UStaticMeshComponent* RootMeshComponent = Cast<UStaticMeshComponent>(GetRootComponent());
+	// if (RootMeshComponent && !PickedUp)
+	// {
+	// 	RootMeshComponent->SetPhysicsLinearVelocity(FVector(0.f, 0.f, 0.f));
+	// 	RotationPrePickedUp = GetActorRotation();
+	// 	RotationOffSet = RotationPrePickedUp - CameraRotation;
+	// 	PickedUp = true;
+	// }
+	// SetActorRotation(CameraRotation + RotationOffSet);
+
+	//Same same different
+	// UStaticMeshComponent* RootMeshComponent = Cast<UStaticMeshComponent>(GetRootComponent());
+	// if (RootMeshComponent)
+	// {
+	// 	if (!PickedUp)
+	// 	{
+	// 		// Calculate and store the rotation offset only once when first picked up
+	// 		RotationPrePickedUp = GetActorRotation();
+	// 		RotationOffSet = RotationPrePickedUp - CameraRotation;
+	// 		RootMeshComponent->SetPhysicsLinearVelocity(FVector(0.f, 0.f, 0.f));
+	// 		PickedUp = true;
+	// 	}
+	//
+	// 	// Apply the initial rotation offset to the camera's current rotation
+	// 	SetActorRotation(CameraRotation + RotationOffSet);
+	// }
+
+	//good
 	UStaticMeshComponent* RootMeshComponent = Cast<UStaticMeshComponent>(GetRootComponent());
-	if (RootMeshComponent && !PickedUp)
+	if (RootMeshComponent)
 	{
-		RootMeshComponent->SetPhysicsLinearVelocity(FVector(0.f, 0.f, 0.f));
-		RotationPrePickedUp = GetActorRotation();
-		RotationOffSet = RotationPrePickedUp - CameraRotation;
-		PickedUp = true;
+		if (!PickedUp)
+		{
+			// Calculate and store the rotation offset only once when first picked up
+			RotationPrePickedUp = GetActorRotation();
+			RotationOffSet = RotationPrePickedUp - CameraRotation;
+			RotationOffSet.Pitch = -RotationOffSet.Pitch; // Invert the pitch component immediately
+			RootMeshComponent->SetPhysicsLinearVelocity(FVector(0.f, 0.f, 0.f));
+			PickedUp = true;
+		}
+    
+		// Invert the pitch component of the camera rotation before applying the offset
+		FRotator AdjustedCameraRotation = CameraRotation;
+		AdjustedCameraRotation.Pitch = -AdjustedCameraRotation.Pitch;
+        
+		// Apply the initial rotation offset to the adjusted camera's current rotation
+		SetActorRotation(AdjustedCameraRotation + RotationOffSet);
 	}
-	SetActorRotation(CameraRotation + RotationOffSet);
+
+	//no up and down rotation (global)
+	// UStaticMeshComponent* RootMeshComponent = Cast<UStaticMeshComponent>(GetRootComponent());
+	// if (RootMeshComponent)
+	// {
+	// 	if (!PickedUp)
+	// 	{
+	// 		// Calculate and store the rotation offset only once when first picked up
+	// 		RotationPrePickedUp = GetActorRotation();
+	// 		RotationOffSet = RotationPrePickedUp - CameraRotation;
+	// 		RotationOffSet.Pitch = 0; // Lock the pitch offset to maintain the initial pitch
+	// 		RootMeshComponent->SetPhysicsLinearVelocity(FVector(0.f, 0.f, 0.f));
+	// 		PickedUp = true;
+	// 	}
+	//
+	// 	// Create a new rotation that ignores pitch changes in the camera
+	// 	FRotator NewRotation = CameraRotation + RotationOffSet;
+	// 	NewRotation.Pitch = RotationPrePickedUp.Pitch; // Use the initial pitch
+	//
+	// 	// Apply the rotation
+	// 	SetActorRotation(NewRotation);
+	// }
 }
 
 
