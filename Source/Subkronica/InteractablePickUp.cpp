@@ -37,7 +37,7 @@ void AInteractablePickUp::Holding()
 {
 
 	UStaticMeshComponent* RootMeshComponent = Cast<UStaticMeshComponent>(GetRootComponent());
-	
+
 	if (PlayerController && Player && PlayerCam && RootMeshComponent)
 	{
 		RootMeshComponent->SetSimulatePhysics(true);
@@ -49,28 +49,14 @@ void AInteractablePickUp::Holding()
 		PlayerController->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
 
 		FRotator CameraRotation = PlayerCam->GetComponentRotation();
-		
-		
-		if (!PickedUp)
-		{
-			RootMeshComponent->SetPhysicsLinearVelocity(FVector(0.f, 0.f, 0.f));
+		UpdateRotation(CameraRotation); // This call now handles all rotation-related adjustments
 
-			RotationPrePickedUp = GetActorRotation();
-			RotationOffSet = RotationPrePickedUp - CameraRotation; 
-			PickedUp = true;
-
-		}
-		
-		
 		FVector HoldPosition = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * PickUpOffSet;
-
-		FVector Direction = PlayerViewPointLocation - GetActorLocation().GetSafeNormal();
-
-		FHitResult HitResult;
 		FVector Start = GetActorLocation();
 		FVector End = HoldPosition;
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(this);
+		FHitResult HitResult;
 
 		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams);
 		if (!bHit)
@@ -80,9 +66,22 @@ void AInteractablePickUp::Holding()
 		}
 		
 		//SetActorLocation(HoldPosition);
-		SetActorRotation(CameraRotation + RotationOffSet);
+		//SetActorRotation(CameraRotation + RotationOffSet);
 	}
 	 
+}
+
+void AInteractablePickUp::UpdateRotation(const FRotator& CameraRotation)
+{
+	UStaticMeshComponent* RootMeshComponent = Cast<UStaticMeshComponent>(GetRootComponent());
+	if (RootMeshComponent && !PickedUp)
+	{
+		RootMeshComponent->SetPhysicsLinearVelocity(FVector(0.f, 0.f, 0.f));
+		RotationPrePickedUp = GetActorRotation();
+		RotationOffSet = RotationPrePickedUp - CameraRotation;
+		PickedUp = true;
+	}
+	SetActorRotation(CameraRotation + RotationOffSet);
 }
 
 
@@ -104,7 +103,7 @@ void AInteractablePickUp::letGo()
 
 void AInteractablePickUp::Action()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Action!"));
+	UE_LOG(LogTemp, Error, TEXT("Action!"));
 
 }
 

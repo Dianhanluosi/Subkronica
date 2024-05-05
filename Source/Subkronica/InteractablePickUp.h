@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InteractableMother.h"
+#include "Renderer/Private/RayTracing/RayTracingLighting.h"
 #include "InteractablePickUp.generated.h"
 
 /**
@@ -30,6 +31,8 @@ public:
 	
 
 	virtual void Holding() override;
+
+	virtual void UpdateRotation(const FRotator& CameraRotation);
 
 	virtual void letGo() override;
 
