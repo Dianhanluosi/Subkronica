@@ -38,17 +38,10 @@ void AElevator::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-	if (Spinner)
-	{
-		if (Spinner->IsOn)
-		{
-			HasPower = true;
-		}
-		// else
-		// {
-		// 	HasPower = false;
-		// }
-	}
+	// if (Spinner)
+	// {
+	// 	HasPower = Spinner->IsOn;
+	// }
 
 	if (!HasPower)
 	{

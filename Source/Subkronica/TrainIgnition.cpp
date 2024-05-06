@@ -6,9 +6,15 @@
 #include "TrainSwitch.h"
 #include "Components/AudioComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "KeySocket.h"
+#include "PowerPlantSpinner.h"
 
 ATrainIgnition::ATrainIgnition()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
+	// Button = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Button"));
+	// RootComponent = Button;
 }
 
 void ATrainIgnition::BeginPlay()
@@ -19,9 +25,46 @@ void ATrainIgnition::BeginPlay()
 void ATrainIgnition::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// if (Spinner)
+	// {
+	// 	HasPower = Spinner->IsOn;
+	// }
+
+	if (!HasPower)
+	{
+		if (TrainController)
+		{
+			TrainController->HasPower = false;
+
+		}
+	}
 }
 
 void ATrainIgnition::Action()
 {
-	Ignition();
+	if (HasPower)
+	{
+		if (KeySocket && KeySocket->bKeyInserted)
+		{
+			Ignition();
+			if (TrainController)
+			{
+				TrainController->HasPower = !TrainController->HasPower;
+
+			}
+		}
+		else
+		{
+			Pressed();
+		}
+		
+	}
+	else
+	{
+		Pressed();
+	}
+	
+	
+	
 }

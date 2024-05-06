@@ -26,9 +26,27 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	class AKeySocket* KeySocket;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	class ATrainController* TrainController;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	class APowerPlantSpinner* Spinner;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool HasPower;
+
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// class UStaticMeshComponent* Button;
+
 	void Action() override;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void Ignition();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void Pressed();
 	
 };
