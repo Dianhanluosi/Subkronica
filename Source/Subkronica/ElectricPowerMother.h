@@ -29,4 +29,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class APowerPlantSpinner* Spinner;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsAlive;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool SoundSensitive;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float AliveDistance;
+
 };
