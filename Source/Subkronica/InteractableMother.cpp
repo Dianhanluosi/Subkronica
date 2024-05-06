@@ -38,7 +38,10 @@ void AInteractableMother::BeginPlay()
 	{
 		RootMeshComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Block);
 
+		RootMeshComponent->SetSimulatePhysics(false);
 	}
+
+	OriginalZ = GetActorLocation().Z;
 	
 	
 	
@@ -50,6 +53,20 @@ void AInteractableMother::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//UE_LOG(LogTemp, Warning, TEXT("Is Grabbing: %d"), Grabbed);
+
+	if (!Spawnable)
+	{
+		Bobbing();
+	}
+	
+	UStaticMeshComponent* RootMeshComponent = Cast<UStaticMeshComponent>(GetRootComponent());
+	if (RootMeshComponent && RootMeshComponent->IsSimulatingPhysics())
+	{
+		Spawnable = true;
+	}
+
+	
+	
 
 }
 
@@ -67,5 +84,15 @@ void AInteractableMother::Action()
 
 void AInteractableMother::Shoot()
 {
+}
+
+void AInteractableMother::Bobbing()
+{
+	float Time = GetWorld()->GetTimeSeconds();
+	float NewZ = OriginalZ + ZBobOffset * FMath::Sin(ZBobSpeed * Time);
+
+	FVector CurrentLocation = GetActorLocation();
+	CurrentLocation.Z = NewZ;
+	SetActorLocation(CurrentLocation);
 }
 

@@ -4,19 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "InteractableMother.generated.h"
+#include "PickUpSpawner.generated.h"
 
 UCLASS()
-class SUBKRONICA_API AInteractableMother : public AActor
+class SUBKRONICA_API APickUpSpawner : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AInteractableMother();
-
-	
-	
+	APickUpSpawner();
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,37 +23,22 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly)
-	bool Grabbed = false;
-
-	UPROPERTY(EditDefaultsOnly)
-	bool PickedUp = false;
-
-	//Pick up control
-	virtual void Holding();
-	virtual void letGo();
-
-	virtual void Action();
-	virtual void Shoot();
-
-
-	class APlayerController* PlayerController = nullptr;
-	class APlayerCharacter* Player = nullptr;
-	class UCameraComponent* PlayerCam = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf <class AInteractableMother> PickUpClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool Spawnable;
+	AInteractableMother* CurrentPickUp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float OriginalZ;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ZBobOffset;
+	FRotator SpawnRotationOffset;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	float SpawnTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ZBobSpeed;
+	float SpawnWaitTime;
 
 	UFUNCTION(BlueprintCallable)
-	void Bobbing();
-	
+	void SpawnPickUp();
+
 };
