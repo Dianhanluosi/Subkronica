@@ -117,7 +117,7 @@ void AElevator::MoveTowardsTarget(float DeltaTime)
 	{
 		FVector CurrentPosition = GetActorLocation();
 		FVector TargetPosition = TargetPositions[0];
-		if (FVector::Dist(CurrentPosition, TargetPosition) < 10.f)
+		if (FVector::Dist(CurrentPosition, TargetPosition) < 20.f)
 		{
 			SetActorLocation(TargetPosition);
 			bIsMoving = false;
