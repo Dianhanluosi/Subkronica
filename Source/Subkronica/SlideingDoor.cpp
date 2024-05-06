@@ -23,6 +23,13 @@ ASlideingDoor::ASlideingDoor()
 void ASlideingDoor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UBoxComponent* Box = Cast<UBoxComponent>(CollideBox);
+
+	if (CollideBox)
+	{
+		CollideBox->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Block);
+	}
 }
 
 void ASlideingDoor::Tick(float DeltaTime)

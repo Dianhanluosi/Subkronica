@@ -40,10 +40,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float Speed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UPrimitiveComponent* CollideBox;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UStaticMeshComponent* Door;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UAudioComponent* AudioComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

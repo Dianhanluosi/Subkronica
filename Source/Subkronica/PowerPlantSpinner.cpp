@@ -3,6 +3,7 @@
 
 #include "PowerPlantSpinner.h"
 #include "TimerManager.h"
+#include "EndingManager.h"
 
 // Sets default values
 APowerPlantSpinner::APowerPlantSpinner()
@@ -58,7 +59,15 @@ void APowerPlantSpinner::Tick(float DeltaTime)
 		IsOverHeating = false;
 	}
 
-	ControlCountdown();
+	if (Explosion)
+	{
+		EndingManager->ReceiveEndingNumber(3);
+	}
+	else
+	{
+		ControlCountdown();
+	}
+	
 	
 }
 
@@ -86,7 +95,7 @@ void APowerPlantSpinner::ControlCountdown()
 	{
 		if (!GetWorld()->GetTimerManager().IsTimerActive(CountdownTimerHandle))
 		{
-			UE_LOG(LogTemp, Error, TEXT("Start"));
+			//UE_LOG(LogTemp, Error, TEXT("Start"));
 			CountdownRemaining = OverHeatCountdown;
 			GetWorld()->GetTimerManager().SetTimer(CountdownTimerHandle,
 				this, &APowerPlantSpinner::HandleCountdown, 1.0f, true);
@@ -102,7 +111,7 @@ void APowerPlantSpinner::ControlCountdown()
 	{
 		if (GetWorld()->GetTimerManager().IsTimerActive(CountdownTimerHandle))
 		{
-			UE_LOG(LogTemp, Error, TEXT("End"));
+			//UE_LOG(LogTemp, Error, TEXT("End"));
 			GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
 			CountdownRemaining = OverHeatCountdown;
 		}
@@ -115,14 +124,14 @@ void APowerPlantSpinner::HandleCountdown()
 	if (CountdownRemaining > 0)
 	{
 		CountdownRemaining--;
-		UE_LOG(LogTemp, Error, TEXT("Countdown: %f seconds remaining"), CountdownRemaining);
+		//UE_LOG(LogTemp, Error, TEXT("Countdown: %f seconds remaining"), CountdownRemaining);
 
 	}
 	else
 	{
 		Explosion = true;
 		GetWorld()->GetTimerManager().ClearTimer(CountdownTimerHandle);
-		UE_LOG(LogTemp, Error, TEXT("Countdown finished!"));
+		//UE_LOG(LogTemp, Error, TEXT("Countdown finished!"));
 	}
 		
 }

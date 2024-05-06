@@ -88,5 +88,14 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void Braking();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float FinishLine;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FVector FinishLineLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class AEndingManager* EndingManager;
 	
 };

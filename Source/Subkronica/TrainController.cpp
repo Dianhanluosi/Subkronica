@@ -10,6 +10,7 @@
 #include "PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/BoxComponent.h"
+#include "EndingManager.h"
 
 // Sets default values
 ATrainController::ATrainController()
@@ -37,6 +38,8 @@ void ATrainController::BeginPlay()
 
 	DetectionBox->OnComponentBeginOverlap.AddDynamic(this, &ATrainController::OnPlayerEnter);
 	DetectionBox->OnComponentEndOverlap.AddDynamic(this, &ATrainController::OnPlayerExit);
+
+	FinishLineLocation = GetActorLocation() + GetActorForwardVector() * FinishLine;
 	
 	
 }
@@ -80,6 +83,21 @@ void ATrainController::Tick(float DeltaTime)
 	else
 	{
 		Stop(DeltaTime);
+	}
+
+	if (HasPower && bGo && EndingManager)
+	{
+		if (FVector::Dist(GetActorLocation(), FinishLineLocation) < 100.f)
+		{
+			if (bPlayerIn)
+			{
+				EndingManager->ReceiveEndingNumber(1);
+			}
+			else
+			{
+				EndingManager->ReceiveEndingNumber(2);
+			}
+		}
 	}
 	
 	

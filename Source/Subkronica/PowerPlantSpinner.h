@@ -87,7 +87,8 @@ public:
 
 	
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class AEndingManager* EndingManager;
 
 	
 
