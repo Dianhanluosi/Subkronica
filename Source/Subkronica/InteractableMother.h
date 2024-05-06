@@ -58,5 +58,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Bobbing();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool LookedAt;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int PromptType;
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetPrompt();
 	
 };

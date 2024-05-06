@@ -33,12 +33,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopLooking();
 
-private:
 	UPROPERTY(EditAnywhere)
 	float MaxClickDistance = 400;
 
 	UPROPERTY(EditAnywhere)
 	float ClickRadius = 0;
+
+private:
+	
+
+	
 	
 	class UPhysicsHandleComponent* GetPhysicsHandle() const;
 

@@ -38,6 +38,28 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	//UE_LOG(LogTemp, Warning, TEXT("Interactable Pointer: %p"), Interactable)
 
+	UPhysicsHandleComponent* PhysicsHandle =  GetPhysicsHandle();
+
+	if (PhysicsHandle)
+	{
+		FHitResult HitResult;
+		CanGrab = GetGrabbableInReach(HitResult);
+
+		if (GetGrabbableInReach(HitResult) && HitResult.GetActor())
+		{
+			LookedAtItem = Cast<AInteractableMother>(HitResult.GetActor());
+			LookedAtItem->LookedAt = true;
+		}
+		else if (LookedAtItem)
+		{
+			LookedAtItem->LookedAt = false;
+			LookedAtItem = nullptr;
+		}
+	}
+	
+	
+	
+	
 	LoseGrabbedItem();
 }
 

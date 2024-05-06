@@ -4,12 +4,16 @@
 #include "ClickableMother.h"
 #include "Interactor.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "PlayerCharacter.h"
 
 // Sets default values
 AClickableMother::AClickableMother()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
 
 }
 
@@ -26,6 +30,7 @@ void AClickableMother::BeginPlay()
 
 	}
 	
+	
 }
 
 // Called every frame
@@ -34,6 +39,27 @@ void AClickableMother::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//UE_LOG(LogTemp, Warning, TEXT(" %d"), LookedAt);
+
+	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	
+	SetPrompt();
+	
+	if (LookedAt)
+	{
+		PromptType = 1;
+
+	}
+	else if (PlayerCharacter && PlayerCharacter->FindComponentByClass<UInteractor>() &&
+		FVector::Dist(GetActorLocation(),
+			PlayerCharacter->FindComponentByClass<UInteractor>()->GetComponentLocation())
+			<= (PlayerCharacter->FindComponentByClass<UInteractor>()->MaxClickDistance)*2)
+	{
+		PromptType = 2;
+	}
+	else
+	{
+		PromptType = 0;
+	}
 	
 }
 

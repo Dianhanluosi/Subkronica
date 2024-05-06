@@ -8,7 +8,7 @@ public class Subkronica : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "MovieScene", "Niagara" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "MovieScene", "Niagara" , "UMG"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

@@ -28,5 +28,11 @@ public:
 	bool LookedAt = false;
 
 	virtual void Action();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int PromptType;
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetPrompt();
 	
 };

@@ -35,7 +35,11 @@ public:
 
 	AInteractableMother* Interactable = nullptr;
 
-private:
+	AInteractableMother* LookedAtItem = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool CanGrab;
+
 	UPROPERTY(EditAnywhere)
 	float MaxGrabDistance = 400;
 
@@ -44,6 +48,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float LoseDistance = 100;
+
+private:
+	
 
 
 	class UPhysicsHandleComponent* GetPhysicsHandle() const;

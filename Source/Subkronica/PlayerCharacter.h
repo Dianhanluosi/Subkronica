@@ -126,6 +126,17 @@ public:
 
 	class AInteractableMother* Interactable;
 	class AClickableMother* Clickable;
+
+	
+	//Sound Shit
+	
+
+
+	//UI Shit
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	bool IsLookingAtThings;
+
+	
 	
 private:
 	//Set up movement
@@ -166,6 +177,8 @@ private:
 	float MinPitchAngle = -85;
 	UPROPERTY(EditDefaultsOnly, Category = "Control Axis")
 	float MaxPitchAngle = 85;
+
+
 	
 };
 

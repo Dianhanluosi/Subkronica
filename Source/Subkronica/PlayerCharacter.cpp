@@ -161,6 +161,19 @@ void APlayerCharacter::Tick(float DeltaTime)
 	// float CroucHInterpTime = FMath::Min(1.f, CrouchSpeed * DeltaTime);
 	// CrouchEyeOffSet = (1.f - CroucHInterpTime) * CrouchEyeOffSet;
 
+	if (Clickable)
+	{
+		IsLookingAtThings = true;
+	}
+	else if (Grabber->CanGrab)
+	{
+		IsLookingAtThings = true;
+	}
+	else
+	{
+		IsLookingAtThings = false;
+	}
+
 }
 
 // Called to bind functionality to input
