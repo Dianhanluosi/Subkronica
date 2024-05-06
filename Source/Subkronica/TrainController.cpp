@@ -30,17 +30,7 @@ void ATrainController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (Spinner)
-	{
-		if (Spinner->IsOn)
-		{
-			HasPower = true;
-		}
-		// else
-		// {
-		// 	HasPower = false;
-		// }
-	}
+	
 
 }
 

@@ -14,4 +14,30 @@ class SUBKRONICA_API ATrainSwitch : public AClickableMother
 {
 	GENERATED_BODY()
 	
+public:	
+	// Sets default values for this actor's properties
+	ATrainSwitch();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class APowerPlantSpinner* Spinner;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class ATrainController* TrainController;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class ATrainIgnition* Ignition;
+	
+	void Action() override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void Switched();
+	
 };

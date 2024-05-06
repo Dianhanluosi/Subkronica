@@ -7,3 +7,21 @@
 #include "Components/AudioComponent.h"
 #include "Components/StaticMeshComponent.h"
 
+ATrainSwitch::ATrainSwitch()
+{
+}
+
+void ATrainSwitch::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void ATrainSwitch::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+void ATrainSwitch::Action()
+{
+	Switched();
+}

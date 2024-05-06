@@ -7,3 +7,21 @@
 #include "Components/AudioComponent.h"
 #include "Components/StaticMeshComponent.h"
 
+ATrainIgnition::ATrainIgnition()
+{
+}
+
+void ATrainIgnition::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void ATrainIgnition::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+void ATrainIgnition::Action()
+{
+	Ignition();
+}
