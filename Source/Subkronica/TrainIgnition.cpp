@@ -31,7 +31,7 @@ void ATrainIgnition::Tick(float DeltaTime)
 	// 	HasPower = Spinner->IsOn;
 	// }
 
-	if (!HasPower)
+	if (!IsPowered)
 	{
 		if (TrainController)
 		{
@@ -43,7 +43,10 @@ void ATrainIgnition::Tick(float DeltaTime)
 
 void ATrainIgnition::Action()
 {
-	if (HasPower)
+
+	Pressed();
+	UE_LOG(LogTemp, Warning, TEXT("Error"), IsPowered ? TEXT("true") : TEXT("false"));
+	if (IsPowered)
 	{
 		if (KeySocket && KeySocket->bKeyInserted)
 		{
@@ -54,17 +57,7 @@ void ATrainIgnition::Action()
 
 			}
 		}
-		else
-		{
-			Pressed();
-		}
-		
 	}
-	else
-	{
-		Pressed();
-	}
-	
 	
 	
 }

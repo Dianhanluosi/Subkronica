@@ -30,6 +30,45 @@ public:
 	bool HasPower;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bGo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Speed;
+
+	void Go(float DeltaTime);
+
+	void Stop();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class APlayerCharacter* PlayerCharacter;
+	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class APowerPlantSpinner* Spinner;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UAudioComponent* AudioComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class USoundBase* OnSound;
+
+	bool OnPlayed;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class USoundBase* OffSound;
+
+	bool OffPlayed = true;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	class UBoxComponent* DetectionBox;
+
+	UFUNCTION()
+	void OnPlayerEnter(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnPlayerExit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bPlayerIn;
+	
 };

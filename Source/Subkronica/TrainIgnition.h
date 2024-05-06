@@ -36,7 +36,7 @@ public:
 	class APowerPlantSpinner* Spinner;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool HasPower;
+	bool IsPowered;
 
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	// class UStaticMeshComponent* Button;
