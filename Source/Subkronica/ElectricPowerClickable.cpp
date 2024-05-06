@@ -3,7 +3,8 @@
 
 #include "ElectricPowerClickable.h"
 
-#include "ElectricPowerClick.h"
+#include "ElectricPowerMother.h"
+
 
 AElectricPowerClickable::AElectricPowerClickable()
 {
@@ -24,6 +25,6 @@ void AElectricPowerClickable::Action()
 	Clicked();
 	if (EPC)
 	{
-		EPC->Clicked = !EPC->Clicked;
+		EPC->IsAlive = !EPC->IsAlive;
 	}
 }

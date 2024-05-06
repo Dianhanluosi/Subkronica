@@ -26,7 +26,7 @@ public:
 	void Action() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class AElectricPowerClick* EPC;
+	class AElectricPowerMother* EPC;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void Clicked();
