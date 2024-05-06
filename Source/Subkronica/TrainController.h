@@ -35,9 +35,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float Speed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float GoSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float BrakeSpeed;
+
 	void Go(float DeltaTime);
 
-	void Stop();
+	void Stop(float DeltaTime);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class APlayerCharacter* PlayerCharacter;
@@ -56,7 +62,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class USoundBase* OffSound;
-
+	
 	bool OffPlayed = true;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -70,5 +76,17 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool bPlayerIn;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bIsGoing;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	bool bIsBraking;
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void Running();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void Braking();
 	
 };

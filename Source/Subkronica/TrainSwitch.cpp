@@ -19,9 +19,24 @@ void ATrainSwitch::BeginPlay()
 void ATrainSwitch::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (TrainController)
+	{
+		TrainController->bGo = IsOn;
+	}
+
+	FRotator TargetRotation = IsOn ? OnRotation : OffRotation;
+
+	FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, DeltaTime, Speed);
+
+	SetActorRotation(NewRotation);
+	
+	
 }
 
 void ATrainSwitch::Action()
 {
+	IsOn = !IsOn;
+	
 	Switched();
 }

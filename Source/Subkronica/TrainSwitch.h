@@ -39,5 +39,18 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void Switched();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FRotator OffRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FRotator OnRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool IsOn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Speed;
+	
 	
 };

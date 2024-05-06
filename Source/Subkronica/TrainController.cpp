@@ -74,12 +74,12 @@ void ATrainController::Tick(float DeltaTime)
 		}
 		else
 		{
-			Stop();
+			Stop(DeltaTime);
 		}
 	}
 	else
 	{
-		Stop();
+		Stop(DeltaTime);
 	}
 	
 	
@@ -95,13 +95,22 @@ void ATrainController::Go(float DeltaTime)
 	// 		PlayerCharacter->GetRootComponent()->AttachToComponent(GetRootComponent(),FAttachmentTransformRules::KeepRelativeTransform);
 	// 	}
 	// }
+	Speed = GoSpeed;
+	
 	FVector NewLocation = GetActorLocation();
 	NewLocation += GetActorForwardVector() * Speed * DeltaTime;
 	SetActorLocation(NewLocation);
+
+	if (!bIsGoing)
+	{
+		Running();
+		bIsGoing = true;
+	}
+	
 	
 }
 
-void ATrainController::Stop()
+void ATrainController::Stop(float DeltaTime)
 {
 	// if (PlayerCharacter)
 	// {
@@ -111,27 +120,42 @@ void ATrainController::Stop()
 	// 		PlayerCharacter->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	// 	}
 	// }
+
+	if (bIsGoing)
+	{
+		Braking();
+		Speed = FMath::Max(0.0f, Speed - BrakeSpeed * DeltaTime);  // Decrement speed
+		FVector NewLocation = GetActorLocation() + GetActorForwardVector() * Speed * DeltaTime;
+		SetActorLocation(NewLocation);
+
+		if (Speed <= 0)
+		{
+			bIsGoing = false;  // Ensure bIsGoing is also set to false
+		}
+	}
+	
+	
 }
 
 void ATrainController::OnPlayerEnter(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Error, TEXT("Overlap began with: %s"), *OtherActor->GetName());
+	//UE_LOG(LogTemp, Error, TEXT("Overlap began with: %s"), *OtherActor->GetName());
 	if (OtherActor && OtherActor->IsA(APlayerCharacter::StaticClass()))
 	{
 		bPlayerIn = true;
-		UE_LOG(LogTemp, Error, TEXT("Player has entered the detection box."));
+		//UE_LOG(LogTemp, Error, TEXT("Player has entered the detection box."));
 	}
 }
 
 void ATrainController::OnPlayerExit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	UE_LOG(LogTemp, Error, TEXT("Overlap ended with: %s"), *OtherActor->GetName());
+	//UE_LOG(LogTemp, Error, TEXT("Overlap ended with: %s"), *OtherActor->GetName());
 	if (OtherActor && OtherActor->IsA(APlayerCharacter::StaticClass()))
 	{
 		bPlayerIn = false;
-		UE_LOG(LogTemp, Error, TEXT("Player has exited the detection box."));
+		//UE_LOG(LogTemp, Error, TEXT("Player has exited the detection box."));
 	}
 }
 
