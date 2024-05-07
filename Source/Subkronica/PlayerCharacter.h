@@ -129,12 +129,28 @@ public:
 
 	
 	//Sound Shit
-	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	int SoundType;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	bool MoveF;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	bool MoveR;
+	UFUNCTION(BlueprintImplementableEvent)
+	void MovingSoundControl();
+	UFUNCTION(BlueprintImplementableEvent)
+	void StopMovingSoundControl();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsActuallyFalling() const;
 
 
 	//UI Shit
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	bool IsLookingAtThings;
+
+	
+
+
 
 	
 	

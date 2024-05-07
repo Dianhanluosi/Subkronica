@@ -51,10 +51,10 @@ public:
 	float OriginalZ;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ZBobOffset;
+	float ZBobOffset = 20.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ZBobSpeed;
+	float ZBobSpeed = 4.f;
 
 	UFUNCTION(BlueprintCallable)
 	void Bobbing();

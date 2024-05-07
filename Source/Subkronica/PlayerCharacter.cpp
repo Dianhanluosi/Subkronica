@@ -130,15 +130,38 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 	
 	ClimbCtrl(IsClimbing);
+	//SoundType = 0;
 
+	if (!MoveF && !MoveR)
+	{
+		//UE_LOG(LogTemp, Error, TEXT("Not Moving"));
+		StopMovingSoundControl();
+	}
+	
+	if (MoveF || MoveR)
+	{
+		MovingSoundControl();
+	}
+
+
+	
 	if (bIsCrouching)
 	{
+		if (!GetCharacterMovement()->IsFalling())
+		{
+			SoundType = 3;
+		}
+		
 		MoveSpeed = CrouchWalkingSpeed;
 		GetCharacterMovement()->MaxWalkSpeed = CrouchWalkingSpeed;
 		GetCharacterMovement()->JumpZVelocity = 0;
 	}
 	else if (IsClimbing)
 	{
+		if (!GetCharacterMovement()->IsFalling())
+		{
+			SoundType = 4;
+		}
 		MoveSpeed = ClimbingSpeed;
 		GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
 		GetCharacterMovement()->MaxFlySpeed = ClimbingSpeed;
@@ -146,15 +169,28 @@ void APlayerCharacter::Tick(float DeltaTime)
 	}
 	else if (!IsRunning)
 	{
+		if (!GetCharacterMovement()->IsFalling())
+		{
+			SoundType = 1;
+		}
 		MoveSpeed = WalkingSpeed;
 		GetCharacterMovement()->MaxWalkSpeed = WalkingSpeed;
 		GetCharacterMovement()->JumpZVelocity = WalkingJumpSpeed;
 	}
 	else
 	{
+		if (!GetCharacterMovement()->IsFalling())
+		{
+			SoundType = 2;
+		}
 		MoveSpeed = RunningSpeed;
 		GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
 		GetCharacterMovement()->JumpZVelocity = RunningJumpSpeed;
+	}
+
+	if (GetCharacterMovement() && GetCharacterMovement()->IsFalling())
+	{
+		SoundType = 0;
 	}
 
 	//crouch transition setup
@@ -224,6 +260,17 @@ FVector APlayerCharacter::GetCharacterScale()
 	return GetActorScale3D();
 }
 
+bool APlayerCharacter::IsActuallyFalling() const
+{
+	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
+	if (MovementComp && MovementComp->IsFalling())
+	{
+		// Check if the vertical velocity is negative, indicating a downward motion
+		return MovementComp->Velocity.Z < 0;
+	}
+	return false; 
+}
+
 void APlayerCharacter::ClimbCtrl(bool bClimb)
 {
 	 if(bClimb)
@@ -237,12 +284,23 @@ void APlayerCharacter::ClimbCtrl(bool bClimb)
 
 void APlayerCharacter::MoveFowardCtrl(float AxisValue)
 {
+	if (AxisValue != 0)
+	{
+		MoveF = true;
+	}
+	else
+	{
+		MoveF = false;
+	}
+	
+
 	if (!IsClimbing)
 	{
 		AddMovementInput(GetActorForwardVector() * AxisValue * MoveSpeed * GetWorld()->GetDeltaSeconds());
 	}
 	else
 	{
+		
 		AddMovementInput(GetActorUpVector()  * AxisValue * MoveSpeed * GetWorld()->GetDeltaSeconds());
 	}
 	
@@ -251,6 +309,15 @@ void APlayerCharacter::MoveFowardCtrl(float AxisValue)
 
 void APlayerCharacter::MoveRightCtrl(float AxisValue)
 {
+	if (AxisValue != 0)
+	{
+		MoveR = true;
+	}
+	else
+	{
+		MoveR = false;
+	}
+	
 	AddMovementInput(GetActorRightVector() * AxisValue * MoveSpeed * GetWorld()->GetDeltaSeconds());
 	//UE_LOG(LogTemp, Log, TEXT("MoveSpeed: %f"), MoveSpeed);
 }
