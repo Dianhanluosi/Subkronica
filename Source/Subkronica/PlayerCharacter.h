@@ -123,9 +123,12 @@ public:
 	float CrouchHeight;
 
 	FVector GetCharacterScale();
-
+	
+	UPROPERTY(BlueprintReadOnly)
 	class AInteractableMother* Interactable;
+	
 	class AClickableMother* Clickable;
+	
 
 	
 	//Sound Shit
@@ -149,8 +152,7 @@ public:
 	bool IsLookingAtThings;
 
 	
-
-
+	
 
 	
 	
@@ -175,6 +177,7 @@ private:
 	void LetGoOfThings();
 
 	bool IsHolding = false;
+
 
 	void Interact();
 	void Shoot();

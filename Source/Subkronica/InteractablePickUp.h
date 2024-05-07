@@ -38,7 +38,6 @@ public:
 	virtual void Action() override;
 	virtual void Shoot() override;
 	
-	
 
 	UPROPERTY(EditDefaultsOnly)
 	float PickUpOffSet;

@@ -68,6 +68,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	
 
 	// if (GetCapsuleComponent())
 	// {
@@ -209,6 +210,8 @@ void APlayerCharacter::Tick(float DeltaTime)
 	{
 		IsLookingAtThings = false;
 	}
+
+	
 
 }
 
