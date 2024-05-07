@@ -28,7 +28,7 @@ void ATrainIgnition::Tick(float DeltaTime)
 
 	// if (Spinner)
 	// {
-	// 	HasPower = Spinner->IsOn;
+	// 	IsPowered = Spinner->IsOn;
 	// }
 
 	if (!IsPowered)
