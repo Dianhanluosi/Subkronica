@@ -23,6 +23,9 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void CallingAction();
+	
 	void Action() override;
 
 	void UpdateRotation(float DeltaTime);

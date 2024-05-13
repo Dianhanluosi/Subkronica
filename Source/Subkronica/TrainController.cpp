@@ -89,14 +89,7 @@ void ATrainController::Tick(float DeltaTime)
 	{
 		if (FVector::Dist(GetActorLocation(), FinishLineLocation) < 100.f)
 		{
-			if (bPlayerIn)
-			{
-				EndingManager->ReceiveEndingNumber(1);
-			}
-			else
-			{
-				EndingManager->ReceiveEndingNumber(2);
-			}
+			CallingEndingManager();
 		}
 	}
 	

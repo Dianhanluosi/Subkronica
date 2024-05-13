@@ -2,6 +2,8 @@
 
 
 #include "EndingManager.h"
+
+#include "PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -54,7 +56,7 @@ void AEndingManager::ReceiveEndingNumber(int EndingNumber)
 			UE_LOG(LogTemp, Error, TEXT("You're Obliterated By The Reactor."));
 			break;
 		case 5:
-			UE_LOG(LogTemp, Error, TEXT("You Accidentally Shot Yourself."));
+			UE_LOG(LogTemp, Error, TEXT("You Fall."));
 			break;
 		case 6:
 			UE_LOG(LogTemp, Error, TEXT("A Day Has Passed, Time Has Reset, Start Over."));
@@ -67,13 +69,17 @@ void AEndingManager::ReceiveEndingNumber(int EndingNumber)
 		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 		if (PlayerController)
 		{
-			PlayerController->SetInputMode(FInputModeUIOnly()); // Switches input mode to UI only, no game input
-			PlayerController->bShowMouseCursor = true; // Optionally show the cursor for UI interaction
+			//PlayerController->SetInputMode(FInputModeUIOnly()); // Switches input mode to UI only, no game input
+			//PlayerController->bShowMouseCursor = true; // Optionally show the cursor for UI interaction
 			PlayerController->UnPossess();
 		}
 		
 
-
+		// APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		// if (PlayerCharacter)
+		// {
+		// 	PlayerCharacter->DisableInput(PlayerController);
+		// }
 
 		EndingTrigger = true;
 	}

@@ -97,5 +97,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class AEndingManager* EndingManager;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void CallingEndingManager();
 	
 };

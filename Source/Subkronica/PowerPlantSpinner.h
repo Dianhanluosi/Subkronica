@@ -90,6 +90,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class AEndingManager* EndingManager;
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class APowerSwitchClick* PowerSwitchCick;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void CallingEndingManager();
+
+	bool ManagerCalled;
 
 };

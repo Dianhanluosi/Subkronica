@@ -71,6 +71,11 @@ void APowerSwitchClick::Tick(float DeltaTime)
 	
 }
 
+void APowerSwitchClick::CallingAction()
+{
+	Action();
+}
+
 void APowerSwitchClick::Action()
 {
 	Super::Action();

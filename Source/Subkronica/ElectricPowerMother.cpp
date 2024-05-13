@@ -24,10 +24,10 @@ void AElectricPowerMother::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// if (Spinner)
-	// {
-	// 	HasPower = Spinner->IsOn;
-	// }
+	if (Spinner)
+	{
+		HasPower = Spinner->IsOn;
+	}
 
 }
 

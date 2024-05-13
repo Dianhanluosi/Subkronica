@@ -26,10 +26,10 @@ void ATrainIgnition::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// if (Spinner)
-	// {
-	// 	IsPowered = Spinner->IsOn;
-	// }
+	if (Spinner)
+	{
+		IsPowered = Spinner->IsOn;
+	}
 
 	if (!IsPowered)
 	{

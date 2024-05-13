@@ -57,11 +57,18 @@ void APowerPlantSpinner::Tick(float DeltaTime)
 	else
 	{
 		IsOverHeating = false;
+		Explosion = false;
+		ManagerCalled = false;
 	}
 
 	if (Explosion)
 	{
-		EndingManager->ReceiveEndingNumber(3);
+		if (!ManagerCalled)
+		{
+			CallingEndingManager();
+			ManagerCalled = true;
+		}
+		//EndingManager->ReceiveEndingNumber(3);
 	}
 	else
 	{
