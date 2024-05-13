@@ -254,7 +254,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(*RightClick, EInputEvent::IE_Pressed, this, &APlayerCharacter::Shoot);
 
 	
-	
 
 }
 
@@ -460,6 +459,8 @@ void APlayerCharacter::LetGoOfThings()
 		}
 	}
 }
+
+
 
 void APlayerCharacter::Interact()
 {

@@ -71,6 +71,7 @@ public:
 	FString RightClick = "Shoot";
 	UPROPERTY(EditDefaultsOnly, Category = "Control Action")
 	FString Crouching = "Crouch";
+	
 	// UPROPERTY(EditDefaultsOnly, Category = "Control Action")
 	// FString RightClick = "RightClick";
 	// UPROPERTY(EditDefaultsOnly, Category = "Control Action")
@@ -175,7 +176,7 @@ private:
 	
 	void HoldThings();
 	void LetGoOfThings();
-
+	
 	bool IsHolding = false;
 
 

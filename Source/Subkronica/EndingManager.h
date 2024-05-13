@@ -32,6 +32,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ReceiveEndingNumber(int EndingNumber);
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool EndingTrigger;
 
 };
