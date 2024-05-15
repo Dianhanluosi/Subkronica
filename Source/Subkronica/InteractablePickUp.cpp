@@ -22,6 +22,20 @@ void AInteractablePickUp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UStaticMeshComponent* RootMeshComponent = Cast<UStaticMeshComponent>(GetRootComponent());
+	if (RootMeshComponent)
+	{
+		ECollisionResponse CurrentResponse = RootMeshComponent->GetCollisionResponseToChannel(ECC_Pawn);
+
+		// Check if the current response is not Block
+		if (CurrentResponse != ECR_Block)
+		{
+			// Set the collision response to Block if it isn't already
+			RootMeshComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+		}	
+	}
+
+	
 	if (Grabbed)
 	{
 		Holding();

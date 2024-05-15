@@ -1,0 +1,15 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+
+/**
+ * 
+ */
+class SUBKRONICA_API TestingClass2
+{
+public:
+	TestingClass2();
+	~TestingClass2();
+};
